@@ -1,138 +1,148 @@
-# Claude Code Agents — Multi-Agent Orchestrators
+# Simulador Cooperforte
 
-## O que é
+Simulador financeiro completo para produtos de investimento e credito da Cooperforte.
 
-Dois sistemas de subagents + skills orquestradoras para Claude Code:
+## Demo
 
-### 1. Phase Runner — Implementação
-```
-Spec → Planner → [3 Coders paralelo] → [3 Testers paralelo] → Fix → Repeat
-```
+[https://josesiqueira.github.io/simulador-cooperforte](https://josesiqueira.github.io/simulador-cooperforte)
 
-### 2. Test Suite — Testes completos
-```
-Codebase → Test Planner → [3 Unit Testers paralelo + 1 Playwright E2E] → Fix → Report
-```
+## Funcionalidades
 
-## Instalação
+- **Simulador de investimentos** — RDC-i, RDC-q, RDC-sq, LFC Pre, LFC Pos com comparacao lado a lado
+- **Simulador de emprestimos** — Consignado, Portabilidade, MultiCredito, Credito Garantido, CredCooper40, Credito do Trabalhador
+- **Taxas ao vivo do Banco Central** — Selic, CDI e TR atualizados em tempo real via API BCB
+- **3 cenarios Selic (Focus)** — Cortes Acelerados, Base Focus e Cortes Graduais com interpolacao trimestral
+- **Calculo de sobras** — modelo discreto anual baseado no resultado 2024 (116,1% CDI)
+- **Dark mode** — alternancia claro/escuro com persistencia
+- **Mobile-first** — layout responsivo otimizado para celular e desktop
 
-Copie os arquivos para o repo do seu projeto:
+## Stack Tecnologica
+
+| Camada | Tecnologia |
+|--------|-----------|
+| Framework | [Astro](https://astro.build/) (SSG) |
+| Estilo | [Tailwind CSS](https://tailwindcss.com/) v4 |
+| Graficos | [Chart.js](https://www.chartjs.org/) 4.x |
+| Testes | [Vitest](https://vitest.dev/) |
+| Scraping | Python 3.12 (requests + BeautifulSoup4) |
+| CI/CD | GitHub Actions |
+| Deploy | GitHub Pages |
+
+## Como rodar localmente
+
+### Pre-requisitos
+
+- Node.js 22+
+- Python 3.12+ (apenas para scripts de atualizacao de dados)
+
+### Instalacao e desenvolvimento
 
 ```bash
-# Na raiz do seu projeto
-mkdir -p .claude/agents .claude/skills/phase-runner .claude/skills/test-suite
-
-# Copiar os agents
-cp agents/planner.md      .claude/agents/
-cp agents/coder.md        .claude/agents/
-cp agents/tester.md       .claude/agents/
-cp agents/test-planner.md .claude/agents/
-cp agents/unit-tester.md  .claude/agents/
-cp agents/e2e-tester.md   .claude/agents/
-
-# Copiar as skills
-cp skills/phase-runner/SKILL.md  .claude/skills/phase-runner/
-cp skills/test-suite/SKILL.md    .claude/skills/test-suite/
+# Instalar dependencias e iniciar servidor de desenvolvimento
+npm install
+npm run dev
 ```
 
-Estrutura final no seu projeto:
+O servidor estara disponivel em `http://localhost:4321`.
 
-```
-seu-projeto/
-├── .claude/
-│   ├── agents/
-│   │   ├── planner.md          # decompõe spec em fases
-│   │   ├── coder.md            # implementa código
-│   │   ├── tester.md           # audita fases (usado pelo phase-runner)
-│   │   ├── test-planner.md     # analisa codebase, cria TEST-IMPLEMENTATION-PLAN.md
-│   │   ├── unit-tester.md      # escreve e roda Vitest (unit + component)
-│   │   └── e2e-tester.md       # escreve e roda Playwright (E2E)
-│   └── skills/
-│       ├── phase-runner/
-│       │   └── SKILL.md        # orquestra implementação por fases
-│       └── test-suite/
-│           └── SKILL.md        # orquestra pipeline de testes
-├── SPEC.md                     # seu spec
-└── ... (seu código)
+### Scripts de dados (opcional)
+
+```bash
+# Instalar dependencias Python
+pip install -r scripts/requirements.txt
+
+# Atualizar taxas da Cooperforte (scraping cf.coop.br)
+python scripts/scrape-cooperforte.py
+
+# Atualizar projecoes Focus (API BCB OLINDA)
+python scripts/fetch-focus.py
 ```
 
-## Como usar
+### Testes
 
-### Implementar um projeto do zero
-
-```
-/phase-runner SPEC.md
+```bash
+npm test
 ```
 
-O phase-runner chama o planner, divide em fases, e para cada fase lança 3 coders
-→ 3 testers → fix loop → commit → próxima fase.
-
-### Rodar testes (a qualquer momento)
+## Arquitetura
 
 ```
-/test-suite
+simulador-cooperforte/
+├── .github/workflows/
+│   ├── deploy.yml               # Deploy para GitHub Pages
+│   └── update-rates.yml         # Atualizacao automatica de taxas
+├── public/data/
+│   ├── cooperforte-rates.json   # Taxas de investimentos e emprestimos
+│   ├── focus.json               # Projecoes Selic/IPCA do Focus
+│   └── last-updated.json        # Timestamp da ultima atualizacao
+├── scripts/
+│   ├── scrape-cooperforte.py    # Scraping de taxas do site Cooperforte
+│   ├── fetch-focus.py           # Consulta API OLINDA (expectativas Focus)
+│   └── requirements.txt         # Dependencias Python
+├── src/
+│   ├── components/              # Componentes Astro reutilizaveis
+│   │   ├── InvestmentSimulator.astro
+│   │   ├── LoanSimulator.astro
+│   │   ├── ComparisonChart.astro
+│   │   ├── ResultsTable.astro
+│   │   ├── ScenarioSelector.astro
+│   │   ├── RateInputs.astro
+│   │   └── StaleBanner.astro
+│   ├── layouts/
+│   │   └── Layout.astro         # Layout base (header, nav, footer, dark mode)
+│   ├── lib/
+│   │   ├── calculator.js        # Motor de calculo (Price, IR, CET, IOF, cenarios)
+│   │   ├── bcb-api.js           # Fetch Selic/CDI/TR da API BCB (cache 1h)
+│   │   ├── data-loader.js       # Carrega JSONs de taxas e projecoes
+│   │   └── formatters.js        # Formatacao BRL, percentuais, datas (pt-BR)
+│   ├── pages/
+│   │   ├── index.astro          # Landing page com dashboard
+│   │   ├── investimentos.astro  # Simulador de investimentos
+│   │   └── emprestimos.astro    # Simulador de emprestimos
+│   └── styles/
+│       └── global.css           # Tailwind directives + variaveis CSS
+├── tests/
+│   └── calculator.test.js       # Testes unitarios do motor de calculo
+├── astro.config.mjs
+├── tailwind.config.mjs
+├── vitest.config.js
+└── package.json
 ```
 
-O test-suite escaneia o codebase, cria/atualiza TEST-IMPLEMENTATION-PLAN.md com test cases
-determinísticos, depois lança 3 unit-testers + 1 Playwright agent em paralelo.
-Gera TEST-REPORT.md com pass rate, bugs, e recomendação.
+## Fontes de dados
 
-### Fluxo combinado (recomendado)
+| Fonte | Dados | Metodo |
+|-------|-------|--------|
+| [API BCB (SGS)](https://dadosabertos.bcb.gov.br/) | Selic meta, CDI anualizado, TR mensal | Fetch no browser (tempo real, sem CORS) |
+| [API OLINDA (Focus)](https://olinda.bcb.gov.br/) | Projecoes anuais Selic e IPCA | Script Python via GitHub Actions |
+| [cf.coop.br](https://cf.coop.br/) | Taxas de investimentos e emprestimos Cooperforte | Scraping Python via GitHub Actions |
 
-O phase-runner pode invocar o test-suite ao final de cada fase automaticamente.
-Basta dizer ao Claude Code:
+## Atualizacao automatica
 
-```
-/phase-runner SPEC.md — use /test-suite after each phase
-```
+Uma GitHub Action (`update-rates.yml`) roda de **segunda a sexta as 9h BRT** (12h UTC) e executa:
 
-## Os agents
+1. `scrape-cooperforte.py` — coleta taxas atuais do site da Cooperforte
+2. `fetch-focus.py` — consulta projecoes Focus do Banco Central
 
-### Implementação (phase-runner)
-| Agent | Papel | Tools |
-|-------|-------|-------|
-| `planner` | Lê spec, cria IMPLEMENTATION-PLAN.md com fases | Read, Glob, Grep |
-| `coder` | Implementa tasks de uma fase | Read, Edit, Write, Bash, Grep, Glob |
-| `tester` | Audita fase (acceptance criteria) | Read, Grep, Glob, Bash |
+Se houver mudancas nos dados, um commit automatico e criado e o deploy e disparado.
 
-### Testes (test-suite)
-| Agent | Papel | Tools |
-|-------|-------|-------|
-| `test-planner` | Escaneia codebase, cria TEST-IMPLEMENTATION-PLAN.md | Read, Glob, Grep, Bash |
-| `unit-tester` | Escreve e roda Vitest (unit + component) | Read, Write, Edit, Bash, Grep, Glob |
-| `e2e-tester` | Escreve e roda Playwright (E2E + mobile) | Read, Write, Edit, Bash, Grep, Glob |
+Em caso de falha no scraping, os dados anteriores sao mantidos e o status e registrado em `last-updated.json`. Um banner de aviso aparece no site quando os dados tem mais de 7 dias.
 
-## Artefatos gerados
+## Deploy
 
-### Phase Runner
-- `IMPLEMENTATION-PLAN.md` — plano de implementação
-- `STATUS.md` — status de cada fase
-- `AUDIT-phase-N.md` — auditoria por fase
+O site e publicado automaticamente no **GitHub Pages** via a action oficial do Astro (`withastro/action@v5`).
 
-### Test Suite
-- `TEST-IMPLEMENTATION-PLAN.md` — test cases determinísticos (UT-xxx, CT-xxx, E2E-xxx)
-- `TEST-RESULTS-unit.md` — resultados unit/component
-- `TEST-RESULTS-e2e.md` — resultados Playwright
-- `TEST-REPORT.md` — relatório consolidado
-- `tests/unit/` — arquivos de teste Vitest
-- `tests/components/` — testes de componente
-- `tests/e2e/` — specs Playwright
+O deploy e disparado a cada push na branch `main` e tambem pode ser executado manualmente via `workflow_dispatch`.
 
-## Customização
+URL: [https://josesiqueira.github.io/simulador-cooperforte](https://josesiqueira.github.io/simulador-cooperforte)
 
-### Mudar número de agents
+## Disclaimer
 
-Edite o SKILL.md de cada orquestrador. O padrão é 3 coders + 3 testers
-(phase-runner) e 3 unit-testers + 1 e2e-tester (test-suite).
+> **Este simulador e uma ferramenta educacional e NAO constitui recomendacao financeira.**
+> Os valores apresentados sao estimativas baseadas em dados publicos e podem divergir dos valores reais praticados pela Cooperforte.
+> Sobras nao sao garantidas e dependem do resultado anual e aprovacao em assembleia.
+> Consulte a Cooperforte para informacoes oficiais: [cf.coop.br](https://cf.coop.br/)
 
-### Mudar frameworks de teste
+## Licenca
 
-O default é Vitest (unit/component) + Playwright (E2E). Para mudar:
-- Edite `unit-tester.md` — troque referências a Vitest por Jest/Mocha/etc
-- Edite `e2e-tester.md` — troque Playwright por Cypress/etc
-
-### Adicionar agents
-
-Crie novos `.md` em `.claude/agents/` e referencie nos SKILL.md.
-Exemplos: `a11y-tester.md` (axe-core), `perf-tester.md` (Lighthouse),
-`security-scanner.md` (npm audit + OWASP checks).
+[MIT](LICENSE)

@@ -1,32 +1,110 @@
 {
-  "updated_at": "2026-03-19T12:00:00Z",
+  "updated_at": "2026-03-19T14:30:10Z",
   "source": "cf.coop.br",
   "investimentos": {
-    "rdc_i": { "taxa_cdi_pct": 100, "min_aplicacao": 200, "prazo_min": 24, "prazo_max": 60, "fgcoop": true },
-    "rdc_q": { "taxa_cdi_pct": 100, "spread_aa": 0.15, "min_aplicacao": 100000, "prazo_min": 24, "prazo_max": 60, "fgcoop": true },
-    "rdc_sq": { "taxa_cdi_pct": 100, "spread_aa": 0.35, "min_aplicacao": 1000000, "prazo_min": 24, "prazo_max": 60, "fgcoop": true },
-    "lfc_pos": { "taxa_cdi_pct": 100, "spread_aa": 0.40, "min_aplicacao": 100000, "prazo_fixo": 24, "fgcoop": false },
-    "lfc_pre": { "taxa_aa": null, "nota": "DINAMICO — verificar cf.coop.br", "min_aplicacao": 100000, "prazo_fixo": 24, "fgcoop": false }
+    "rdc_i": {
+      "taxa_cdi_pct": 100,
+      "min_aplicacao": 200,
+      "prazo_min": 24,
+      "prazo_max": 60,
+      "fgcoop": true
+    },
+    "rdc_q": {
+      "taxa_cdi_pct": 100,
+      "spread_aa": 0.15,
+      "min_aplicacao": 100000,
+      "prazo_min": 24,
+      "prazo_max": 60,
+      "fgcoop": true
+    },
+    "rdc_sq": {
+      "taxa_cdi_pct": 100,
+      "spread_aa": 0.35,
+      "min_aplicacao": 1000000,
+      "prazo_min": 24,
+      "prazo_max": 60,
+      "fgcoop": true
+    },
+    "lfc_pos": {
+      "taxa_cdi_pct": 100,
+      "spread_aa": 0.4,
+      "min_aplicacao": 100000,
+      "prazo_fixo": 24,
+      "fgcoop": false
+    },
+    "lfc_pre": {
+      "taxa_aa": null,
+      "nota": "DINAMICO — verificar cf.coop.br",
+      "min_aplicacao": 100000,
+      "prazo_fixo": 24,
+      "fgcoop": false
+    }
   },
   "emprestimos": {
-    "consignado_direto": { "taxa_am": 1.49, "prazo_min": 4, "prazo_max": 96, "desconto": "folha" },
-    "consignado_portabilidade": { "taxa_am": 1.35, "prazo_min": 4, "prazo_max": 96, "desconto": "folha" },
-    "credito_inicial": { "taxa_am": 1.42, "prazo_min": 4, "prazo_max": 48, "valor_max": 40000 },
-    "multicredito": { "taxa_am": 2.19, "prazo_min": 4, "prazo_max": 96 },
-    "credito_garantido": { "taxa_am": 1.42, "indexador": "TR", "prazo_min": 4, "prazo_max": 60, "garantia_pct": 110 },
-    "credcooper40": { "taxa_am": 1.55, "prazo_min": 4, "prazo_max": 60, "status": "verificar_disponibilidade" },
-    "credito_trabalhador": { "taxa_am": null, "nota": "DINAMICO", "desconto": "folha_esocial" }
+    "consignado_direto": {
+      "taxa_am": 1.49,
+      "prazo_min": 4,
+      "prazo_max": 96,
+      "desconto": "folha"
+    },
+    "consignado_portabilidade": {
+      "taxa_am": 1.55,
+      "prazo_min": 4,
+      "prazo_max": 96,
+      "desconto": "folha"
+    },
+    "credito_inicial": {
+      "taxa_am": 1.99,
+      "prazo_min": 4,
+      "prazo_max": 48,
+      "valor_max": 40000
+    },
+    "multicredito": {
+      "taxa_am": 2.19,
+      "prazo_min": 4,
+      "prazo_max": 96
+    },
+    "credito_garantido": {
+      "taxa_am": 1.42,
+      "indexador": "TR",
+      "prazo_min": 4,
+      "prazo_max": 60,
+      "garantia_pct": 110
+    },
+    "credcooper40": {
+      "taxa_am": 1.55,
+      "prazo_min": 4,
+      "prazo_max": 60,
+      "status": "verificar_disponibilidade"
+    },
+    "credito_trabalhador": {
+      "taxa_am": null,
+      "nota": "DINAMICO",
+      "desconto": "folha_esocial"
+    }
   },
   "sobras": {
     "investimentos_cdi_pct": 116.1,
-    "emprestimos_devolucao_pp_aa": 1.50,
+    "emprestimos_devolucao_pp_aa": 1.5,
     "ano_referencia": 2024,
     "nota": "NAO garantido — depende do resultado anual e assembleia"
   },
   "ir_regressivo": [
-    { "ate_dias": 180, "aliquota": 22.5 },
-    { "ate_dias": 360, "aliquota": 20.0 },
-    { "ate_dias": 720, "aliquota": 17.5 },
-    { "ate_dias": 999999, "aliquota": 15.0 }
+    {
+      "ate_dias": 180,
+      "aliquota": 22.5
+    },
+    {
+      "ate_dias": 360,
+      "aliquota": 20.0
+    },
+    {
+      "ate_dias": 720,
+      "aliquota": 17.5
+    },
+    {
+      "ate_dias": 999999,
+      "aliquota": 15.0
+    }
   ]
 }
