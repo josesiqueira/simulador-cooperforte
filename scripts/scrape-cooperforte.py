@@ -31,7 +31,8 @@ RATES_FILE = DATA_DIR / "cooperforte-rates.json"
 LAST_UPDATED_FILE = DATA_DIR / "last-updated.json"
 
 CREDIT_URL = "https://cf.coop.br/produtos-e-diferenciais/credito/"
-INVESTMENT_URL = "https://cf.coop.br/produtos-e-beneficios/"
+INVESTMENT_URL = "https://cf.coop.br/investimentos/"
+INVESTMENT_URL_FALLBACK = "https://cf.coop.br/produtos-e-beneficios/"
 
 HEADERS = {
     "User-Agent": "CooperforteSimulator/1.0 (github.com/josesiqueira/simulador-cooperforte)",
@@ -49,8 +50,13 @@ MAX_CDI_PCT = 130.0
 
 # Regex patterns
 RE_MONTHLY_RATE = re.compile(r"(\d{1,2}[,\.]\d{2})\s*%\s*a\.?\s*m\.?", re.IGNORECASE)
+RE_ANNUAL_RATE = re.compile(r"(\d{1,2}[,\.]\d{2})\s*%\s*a\.?\s*a\.?", re.IGNORECASE)
 RE_CDI_PERCENT = re.compile(r"(\d{2,3}[,\.]?\d{0,2})\s*%\s*(?:do\s+)?CDI", re.IGNORECASE)
 RE_CDI_SPREAD = re.compile(r"CDI\s*\+\s*(\d{1,2}[,\.]\d{2})\s*%", re.IGNORECASE)
+
+# Validation for annual prefixed rates
+MIN_ANNUAL_RATE = 5.0
+MAX_ANNUAL_RATE = 25.0
 
 # Keyword-to-field mapping for loan products
 LOAN_KEYWORDS = {
@@ -192,18 +198,22 @@ def extract_loan_rates(soup: BeautifulSoup) -> dict[str, float]:
 
 def extract_investment_rates(soup: BeautifulSoup) -> dict:
     """
-    Extract CDI percentages and CDI+spread values from investment pages.
+    Extract CDI percentages, CDI+spread values, and prefixed annual rates
+    from investment pages.
 
     Returns a dict like:
-        {"cdi_pct": {field: value}, "cdi_spread": {field: value}}
+        {"cdi_pct": {field: value}, "cdi_spread": {field: value}, "lfc_pre_taxa_aa": float|None}
     """
     cdi_pcts: dict[str, float] = {}
     cdi_spreads: dict[str, float] = {}
+    lfc_pre_taxa: float | None = None
 
     for element in soup.find_all(["section", "div", "p", "li", "td", "span", "h2", "h3", "h4"]):
         text = element.get_text(separator=" ", strip=True)
         if not text or len(text) > 2000:
             continue
+
+        text_lower = text.lower()
 
         # CDI percentage (e.g., "100% do CDI")
         pct_matches = RE_CDI_PERCENT.findall(text)
@@ -211,20 +221,62 @@ def extract_investment_rates(soup: BeautifulSoup) -> dict:
             pct_val = parse_br_number(pct_str)
             if validate_cdi_pct(pct_val):
                 logger.info("Found CDI pct: %.1f%% CDI (text: %.80s...)", pct_val, text)
-                # Try to associate with a product — generic for now
                 if "cdi_generic" not in cdi_pcts:
                     cdi_pcts["cdi_generic"] = pct_val
 
-        # CDI + spread (e.g., "CDI + 0,40%")
+        # CDI + spread (e.g., "CDI + 0,40%") — try to associate with product
         spread_matches = RE_CDI_SPREAD.findall(text)
         for spread_str in spread_matches:
             spread_val = parse_br_number(spread_str)
             if 0.0 < spread_val <= 2.0:
-                logger.info("Found CDI spread: +%.2f%% (text: %.80s...)", spread_val, text)
-                if "spread_generic" not in cdi_spreads:
+                # Try to identify which product this spread belongs to
+                product_key = None
+                if "rdc-sq" in text_lower or "super qualificad" in text_lower:
+                    product_key = "rdc_sq"
+                elif "rdc-q" in text_lower or "qualificad" in text_lower:
+                    product_key = "rdc_q"
+                elif "lfc" in text_lower or "letra financeira" in text_lower:
+                    if "pós" in text_lower or "pos" in text_lower or "pós-fix" in text_lower:
+                        product_key = "lfc_pos"
+                if product_key and product_key not in cdi_spreads:
+                    cdi_spreads[product_key] = spread_val
+                    logger.info("Found CDI spread for %s: +%.2f%% (text: %.80s...)", product_key, spread_val, text)
+                elif product_key is None and "spread_generic" not in cdi_spreads:
                     cdi_spreads["spread_generic"] = spread_val
+                    logger.info("Found CDI spread (generic): +%.2f%% (text: %.80s...)", spread_val, text)
 
-    return {"cdi_pct": cdi_pcts, "cdi_spread": cdi_spreads}
+        # LFC Pre — look for annual rate near "lfc" and "pre" or "prefixad" keywords
+        # Also match blocks that mention "pre" + "% a.a" without CDI (it's a fixed rate)
+        if lfc_pre_taxa is None and ("lfc" in text_lower or "letra financeira" in text_lower):
+            if "pr" in text_lower and ("fix" in text_lower or "% a" in text_lower):
+                annual_matches = RE_ANNUAL_RATE.findall(text)
+                for rate_str in annual_matches:
+                    rate_val = parse_br_number(rate_str)
+                    if MIN_ANNUAL_RATE <= rate_val <= MAX_ANNUAL_RATE:
+                        # Make sure this isn't a CDI+spread (those have "CDI" nearby)
+                        if "cdi" not in text_lower.split(rate_str.replace(",", "."))[0][-30:]:
+                            lfc_pre_taxa = rate_val
+                            logger.info(
+                                "Found LFC Pre rate: %.2f%% a.a. (text: %.80s...)",
+                                rate_val, text,
+                            )
+                            break
+
+        # Fallback: if we see "Pré-fixado" or "Prefixado" near an annual rate in LFC context
+        if lfc_pre_taxa is None and ("pré" in text_lower or "pre" in text_lower or "prefixad" in text_lower):
+            if "lfc" in text_lower or "letra" in text_lower:
+                annual_matches = RE_ANNUAL_RATE.findall(text)
+                for rate_str in annual_matches:
+                    rate_val = parse_br_number(rate_str)
+                    if MIN_ANNUAL_RATE <= rate_val <= MAX_ANNUAL_RATE:
+                        lfc_pre_taxa = rate_val
+                        logger.info(
+                            "Found LFC Pre rate (fallback): %.2f%% a.a. (text: %.80s...)",
+                            rate_val, text,
+                        )
+                        break
+
+    return {"cdi_pct": cdi_pcts, "cdi_spread": cdi_spreads, "lfc_pre_taxa_aa": lfc_pre_taxa}
 
 
 def apply_loan_rates(rates: dict, found_rates: dict[str, float]) -> int:
@@ -272,18 +324,28 @@ def apply_investment_rates(rates: dict, inv_data: dict) -> int:
                     product_key, old, val,
                 )
 
-    # If we found CDI spreads, try to apply them
-    if "spread_generic" in cdi_spreads:
-        spread = cdi_spreads["spread_generic"] / 100.0  # convert percentage to decimal
-        for product_key in ["rdc_q", "rdc_sq", "lfc_pos"]:
-            if product_key in investimentos and "spread_aa" in investimentos[product_key]:
-                old = investimentos[product_key]["spread_aa"]
-                investimentos[product_key]["spread_aa"] = spread
-                updated += 1
-                logger.info(
-                    "Updated investimentos.%s.spread_aa: %s -> %.4f",
-                    product_key, old, spread,
-                )
+    # Apply CDI spreads — prefer product-specific, fall back to generic
+    for product_key in ["rdc_q", "rdc_sq", "lfc_pos"]:
+        spread_pct = cdi_spreads.get(product_key) or cdi_spreads.get("spread_generic")
+        if spread_pct is not None and product_key in investimentos and "spread_aa" in investimentos[product_key]:
+            old = investimentos[product_key]["spread_aa"]
+            investimentos[product_key]["spread_aa"] = spread_pct
+            updated += 1
+            logger.info(
+                "Updated investimentos.%s.spread_aa: %s -> %.2f",
+                product_key, old, spread_pct,
+            )
+
+    # LFC Pre annual rate
+    lfc_pre_taxa = inv_data.get("lfc_pre_taxa_aa")
+    if lfc_pre_taxa is not None and "lfc_pre" in investimentos:
+        old = investimentos["lfc_pre"].get("taxa_aa")
+        investimentos["lfc_pre"]["taxa_aa"] = lfc_pre_taxa
+        updated += 1
+        logger.info(
+            "Updated investimentos.lfc_pre.taxa_aa: %s -> %.2f",
+            old, lfc_pre_taxa,
+        )
 
     return updated
 
@@ -319,8 +381,11 @@ def main() -> None:
         scrape_ok = False
         logger.warning("Credit page fetch failed")
 
-    # Step 3: scrape investment page
+    # Step 3: scrape investment page (try primary URL, then fallback)
     inv_soup = fetch_page(INVESTMENT_URL)
+    if inv_soup is None:
+        logger.info("Primary investment URL failed, trying fallback: %s", INVESTMENT_URL_FALLBACK)
+        inv_soup = fetch_page(INVESTMENT_URL_FALLBACK)
     if inv_soup:
         inv_data = extract_investment_rates(inv_soup)
         has_inv = bool(inv_data.get("cdi_pct") or inv_data.get("cdi_spread"))

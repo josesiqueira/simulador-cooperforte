@@ -680,6 +680,7 @@ import ComparisonChart from './ComparisonChart.astro';
       'rate-spread-rdc-sq': state.rates?.investimentos?.rdc_sq?.spread_aa ?? '',
       'rate-spread-lfc-pos': state.rates?.investimentos?.lfc_pos?.spread_aa ?? '',
       'rate-sobras-cdi': state.rates?.sobras?.investimentos_cdi_pct ?? '',
+      'rate-lfc-pre': state.rates?.investimentos?.lfc_pre?.taxa_aa ?? '',
     };
 
     for (const [id, val] of Object.entries(rateDefaults)) {

@@ -1,16 +1,16 @@
 {
-  "updated_at": "2026-03-19T14:30:10Z",
+  "updated_at": "2026-03-19T15:19:42Z",
   "source": "cf.coop.br",
   "investimentos": {
     "rdc_i": {
-      "taxa_cdi_pct": 100,
+      "taxa_cdi_pct": 100.0,
       "min_aplicacao": 200,
       "prazo_min": 24,
       "prazo_max": 60,
       "fgcoop": true
     },
     "rdc_q": {
-      "taxa_cdi_pct": 100,
+      "taxa_cdi_pct": 100.0,
       "spread_aa": 0.15,
       "min_aplicacao": 100000,
       "prazo_min": 24,
@@ -18,7 +18,7 @@
       "fgcoop": true
     },
     "rdc_sq": {
-      "taxa_cdi_pct": 100,
+      "taxa_cdi_pct": 100.0,
       "spread_aa": 0.35,
       "min_aplicacao": 1000000,
       "prazo_min": 24,
@@ -26,14 +26,14 @@
       "fgcoop": true
     },
     "lfc_pos": {
-      "taxa_cdi_pct": 100,
+      "taxa_cdi_pct": 100.0,
       "spread_aa": 0.4,
       "min_aplicacao": 100000,
       "prazo_fixo": 24,
       "fgcoop": false
     },
     "lfc_pre": {
-      "taxa_aa": null,
+      "taxa_aa": 13.25,
       "nota": "DINAMICO — verificar cf.coop.br",
       "min_aplicacao": 100000,
       "prazo_fixo": 24,
