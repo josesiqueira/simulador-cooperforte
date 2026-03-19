@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+/* Dark mode CSS variables */
+:root {
+  --surface-bg: #ffffff;
+  --surface-card: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --surface-bg: #111827;
+  --surface-card: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+}
+
+body {
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}
