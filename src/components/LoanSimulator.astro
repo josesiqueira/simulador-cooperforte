@@ -248,15 +248,21 @@ import ComparisonChart from './ComparisonChart.astro';
     rateContainer.addEventListener('input', () => debounce(recalcular));
   }
 
+  // ── Helper: parse input value accepting both comma and dot as decimal ──
+  function parseInputValue(el) {
+    if (!el || el.value === '') return NaN;
+    return parseFloat(el.value.replace(',', '.'));
+  }
+
   // ── Get rate from rate-input field or from loaded data ──
   function getProductRate(key) {
     // Check if user has overridden the rate via rate input field
     const inputEl = document.querySelector(`[data-rate="${key}"]`);
     if (inputEl && inputEl.value !== '' && !inputEl.disabled) {
-      return parseFloat(inputEl.value);
+      return parseInputValue(inputEl);
     }
     if (inputEl && inputEl.value !== '') {
-      return parseFloat(inputEl.value);
+      return parseInputValue(inputEl);
     }
     // Fallback to loaded rates
     if (state.rates && state.rates.emprestimos && state.rates.emprestimos[key]) {
@@ -268,7 +274,7 @@ import ComparisonChart from './ComparisonChart.astro';
   function getTRMensal() {
     const trInput = document.querySelector('[data-rate="tr"]');
     if (trInput && trInput.value !== '') {
-      return parseFloat(trInput.value) / 100; // Convert from % to decimal
+      return parseInputValue(trInput) / 100; // Convert from % to decimal
     }
     if (state.tr !== null) {
       return state.tr / 100;
@@ -281,8 +287,8 @@ import ComparisonChart from './ComparisonChart.astro';
     const fixoInput = document.querySelector('[data-rate="iof_fixo"]');
     const diarioInput = document.querySelector('[data-rate="iof_diario"]');
     // Read from inputs (values are in %, e.g. 0.38 and 0.0082)
-    const iofFixoPct = (fixoInput && fixoInput.value !== '') ? parseFloat(fixoInput.value) : 0.38;
-    const iofDiarioPct = (diarioInput && diarioInput.value !== '') ? parseFloat(diarioInput.value) : 0.0082;
+    const iofFixoPct = (fixoInput && fixoInput.value !== '') ? parseInputValue(fixoInput) : 0.38;
+    const iofDiarioPct = (diarioInput && diarioInput.value !== '') ? parseInputValue(diarioInput) : 0.0082;
     const iofFixo = iofFixoPct / 100;   // 0.38% -> 0.0038
     const iofDiario = iofDiarioPct / 100; // 0.0082% -> 0.000082
     const dias = Math.min(Math.max(0, parcelas) * 30, 365);
@@ -292,7 +298,7 @@ import ComparisonChart from './ComparisonChart.astro';
   function getDevolucaoPP() {
     const devInput = document.querySelector('[data-rate="devolucao_sobras"]');
     if (devInput && devInput.value !== '') {
-      return parseFloat(devInput.value) / 100; // p.p. to decimal
+      return parseInputValue(devInput) / 100; // p.p. to decimal
     }
     if (state.rates && state.rates.sobras) {
       return state.rates.sobras.emprestimos_devolucao_pp_aa / 100;

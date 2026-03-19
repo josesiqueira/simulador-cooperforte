@@ -291,7 +291,7 @@ import ComparisonChart from './ComparisonChart.astro';
       lfc_pre_taxa: 'rate-lfc-pre',
     };
     const el = document.getElementById(inputMap[rateKey]);
-    if (el && el.value !== '') return parseFloat(el.value);
+    if (el && el.value !== '') return parseFloat(el.value.replace(',', '.'));
     return 0;
   }
 
