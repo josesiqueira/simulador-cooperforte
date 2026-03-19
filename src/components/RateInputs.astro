@@ -1,0 +1,425 @@
+---
+interface Props {
+  type: 'investimentos' | 'emprestimos';
+}
+
+const { type } = Astro.props;
+---
+
+<details class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)]" id={`rate-inputs-${type}`}>
+  <summary class="flex items-center gap-2 cursor-pointer px-4 py-3 text-sm font-semibold text-[var(--text-primary)] select-none hover:text-cooperforte transition-colors list-none [&::-webkit-details-marker]:hidden">
+    <!-- Gear icon -->
+    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+    <span>Ajustar taxas</span>
+    <!-- Chevron -->
+    <svg class="w-4 h-4 ml-auto transition-transform details-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </summary>
+
+  <div class="px-4 pb-4 pt-2">
+    {type === 'investimentos' ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Selic -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-selic">Selic (% a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-selic" data-rate="selic" step="0.25" min="0" max="30"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Selic">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CDI -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-cdi">CDI (% a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-cdi" data-rate="cdi" step="0.01" min="0" max="30"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo CDI">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Spread RDC-q -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-spread-rdc-q">Spread RDC-q (p.p. a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-spread-rdc-q" data-rate="spread_rdc_q" step="0.01" min="0" max="5"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Spread RDC-q">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Spread RDC-sq -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-spread-rdc-sq">Spread RDC-sq (p.p. a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-spread-rdc-sq" data-rate="spread_rdc_sq" step="0.01" min="0" max="5"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Spread RDC-sq">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Spread LFC Pos -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-spread-lfc-pos">Spread LFC Pos (p.p. a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-spread-lfc-pos" data-rate="spread_lfc_pos" step="0.01" min="0" max="5"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Spread LFC Pos">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sobras % CDI -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-sobras-cdi">Sobras (% do CDI)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-sobras-cdi" data-rate="sobras_cdi_pct" step="0.1" min="0" max="300"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Sobras % CDI">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- LFC Pre taxa -->
+        <div class="rate-field md:col-span-2">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-lfc-pre">LFC Pre taxa (% a.a.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-lfc-pre" data-rate="lfc_pre_taxa" step="0.01" min="0" max="30"
+                   placeholder="Preencher manualmente"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="false" aria-label="Bloquear campo LFC Pre">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Consignado Direto -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-consignado-direto">Consignado Direto (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-consignado-direto" data-rate="consignado_direto" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Consignado Direto">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Consignado Portabilidade -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-consignado-portabilidade">Portabilidade (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-consignado-portabilidade" data-rate="consignado_portabilidade" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Portabilidade">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Credito Inicial -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-credito-inicial">Credito Inicial (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-credito-inicial" data-rate="credito_inicial" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Credito Inicial">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- MultiCredito -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-multicredito">MultiCredito (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-multicredito" data-rate="multicredito" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo MultiCredito">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Credito Garantido -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-credito-garantido">Credito Garantido (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-credito-garantido" data-rate="credito_garantido" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Credito Garantido">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CredCooper40 -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-credcooper40">CredCooper40 (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-credcooper40" data-rate="credcooper40" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo CredCooper40">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Credito Trabalhador -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-credito-trabalhador">Cred. Trabalhador (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-credito-trabalhador" data-rate="credito_trabalhador" step="0.01" min="0" max="10"
+                   placeholder="Preencher manualmente"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="false" aria-label="Bloquear campo Cred. Trabalhador">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- TR -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-tr">TR (% a.m.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-tr" data-rate="tr" step="0.001" min="0" max="5"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo TR">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- IOF Fixo -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-iof-fixo">IOF fixo (%)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-iof-fixo" data-rate="iof_fixo" step="0.01" min="0" max="5" value="0.38"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo IOF fixo">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- IOF Diario -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-iof-diario">IOF diario (%)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-iof-diario" data-rate="iof_diario" step="0.0001" min="0" max="1" value="0.0082"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo IOF diario">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Devolucao Sobras -->
+        <div class="rate-field">
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1" for="rate-devolucao-sobras">Devolucao sobras (p.p.)</label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="rate-devolucao-sobras" data-rate="devolucao_sobras" step="0.01" min="0" max="10"
+                   class="rate-input flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]" />
+            <button type="button" class="lock-btn p-1.5 rounded-md hover:bg-cooperforte/10 transition-colors" data-locked="true" aria-label="Desbloquear campo Devolucao sobras">
+              <svg class="lock-icon w-4 h-4 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0110 0v4"></path>
+              </svg>
+              <svg class="unlock-icon w-4 h-4 text-cooperforte hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 019.9-1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</details>
+
+<script>
+  // On page load, disable inputs that start locked
+  document.querySelectorAll('.lock-btn[data-locked="true"]').forEach((btn) => {
+    const field = btn.closest('.rate-field');
+    if (!field) return;
+    const input = field.querySelector('.rate-input');
+    if (input) input.setAttribute('disabled', '');
+  });
+
+  // Lock/unlock toggle for rate inputs
+  document.querySelectorAll('.lock-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const isLocked = btn.getAttribute('data-locked') === 'true';
+      const field = btn.closest('.rate-field');
+      if (!field) return;
+      const input = field.querySelector('.rate-input');
+      if (!input) return;
+
+      const lockIcon = btn.querySelector('.lock-icon');
+      const unlockIcon = btn.querySelector('.unlock-icon');
+
+      if (isLocked) {
+        // Unlock
+        btn.setAttribute('data-locked', 'false');
+        input.removeAttribute('disabled');
+        if (lockIcon) lockIcon.classList.add('hidden');
+        if (unlockIcon) unlockIcon.classList.remove('hidden');
+      } else {
+        // Lock
+        btn.setAttribute('data-locked', 'true');
+        input.setAttribute('disabled', '');
+        if (lockIcon) lockIcon.classList.remove('hidden');
+        if (unlockIcon) unlockIcon.classList.add('hidden');
+      }
+    });
+  });
+
+  // Chevron rotation on details open/close
+  document.querySelectorAll('details').forEach((details) => {
+    const chevron = details.querySelector('.details-open\\:rotate-180');
+    if (!chevron) return;
+    details.addEventListener('toggle', () => {
+      if (details.open) {
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        chevron.style.transform = '';
+      }
+    });
+  });
+</script>

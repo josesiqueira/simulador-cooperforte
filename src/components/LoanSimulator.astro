@@ -1,0 +1,642 @@
+---
+import RateInputs from './RateInputs.astro';
+import ResultsTable from './ResultsTable.astro';
+import ComparisonChart from './ComparisonChart.astro';
+---
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" id="loan-simulator">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- ── Inputs Panel ── -->
+    <aside class="lg:col-span-4 space-y-6">
+
+      <!-- Valor do emprestimo -->
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <label class="block text-sm font-semibold text-[var(--text-primary)] mb-1" for="loan-valor-slider">
+          Valor do emprestimo
+        </label>
+        <output id="loan-valor-display" class="block text-2xl font-bold text-cooperforte mb-3">R$ 50.000,00</output>
+        <input
+          type="range"
+          id="loan-valor-slider"
+          min="1000" max="500000" step="500" value="50000"
+          class="w-full mb-2"
+        />
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-[var(--text-secondary)]">R$</span>
+          <input
+            type="number"
+            id="loan-valor-input"
+            min="1000" max="500000" step="500" value="50000"
+            class="flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+          />
+        </div>
+      </div>
+
+      <!-- Prazo em parcelas -->
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <label class="block text-sm font-semibold text-[var(--text-primary)] mb-1" for="loan-prazo-slider">
+          Prazo em parcelas
+        </label>
+        <output id="loan-prazo-display" class="block text-2xl font-bold text-cooperforte mb-3">24 meses</output>
+        <input
+          type="range"
+          id="loan-prazo-slider"
+          min="4" max="96" step="1" value="24"
+          class="w-full mb-2"
+        />
+        <div class="flex items-center gap-2">
+          <input
+            type="number"
+            id="loan-prazo-input"
+            min="4" max="96" step="1" value="24"
+            class="flex-1 rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+          />
+          <span class="text-xs text-[var(--text-secondary)]">meses</span>
+        </div>
+      </div>
+
+      <!-- Produto -->
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <label class="block text-sm font-semibold text-[var(--text-primary)] mb-2" for="loan-produto">
+          Produto
+        </label>
+        <select
+          id="loan-produto"
+          class="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+        >
+          <option value="todos">Comparar todos</option>
+          <option value="consignado_direto">Consignado Direto</option>
+          <option value="consignado_portabilidade">Consignado Portabilidade</option>
+          <option value="credito_inicial">Credito Inicial</option>
+          <option value="multicredito">MultiCredito</option>
+          <option value="credito_garantido">Credito Garantido</option>
+          <option value="credcooper40">CredCooper40</option>
+          <option value="credito_trabalhador">Credito do Trabalhador</option>
+        </select>
+      </div>
+
+      <!-- Rate Inputs -->
+      <RateInputs type="emprestimos" />
+    </aside>
+
+    <!-- ── Results Panel ── -->
+    <section class="lg:col-span-8 space-y-6">
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4 text-center">
+          <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-1">Melhor Parcela</p>
+          <p id="loan-metric-parcela" class="text-xl font-bold text-cooperforte">--</p>
+          <p id="loan-metric-parcela-produto" class="text-xs text-[var(--text-secondary)] mt-1"></p>
+        </div>
+        <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4 text-center">
+          <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-1">Menor Total Pago</p>
+          <p id="loan-metric-total" class="text-xl font-bold text-cooperforte">--</p>
+          <p id="loan-metric-total-produto" class="text-xs text-[var(--text-secondary)] mt-1"></p>
+        </div>
+        <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4 text-center">
+          <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide mb-1">Menor CET</p>
+          <p id="loan-metric-cet" class="text-xl font-bold text-cooperforte">--</p>
+          <p id="loan-metric-cet-produto" class="text-xs text-[var(--text-secondary)] mt-1"></p>
+        </div>
+      </div>
+
+      <!-- Results Table -->
+      <ResultsTable id="loan-table" type="emprestimos" />
+
+      <!-- Chart -->
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-3">Comparativo de custos por produto</h3>
+        <ComparisonChart id="loan-chart-bar" ariaLabel="Comparativo de custos por produto" />
+      </div>
+
+      <!-- Com Sobras Section -->
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4 text-cooperforte" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Custo efetivo com sobras (devolucao de juros)
+        </h3>
+        <p class="text-xs text-[var(--text-secondary)] mb-3">
+          Cooperados recebem devolucao parcial dos juros pagos via sobras anuais. Valor <strong>nao garantido</strong> — depende do resultado anual e assembleia.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left" id="loan-sobras-table">
+            <thead class="text-xs uppercase bg-cooperforte/5 text-[var(--text-secondary)] dark:bg-cooperforte/10">
+              <tr>
+                <th scope="col" class="px-3 py-2 font-semibold">Produto</th>
+                <th scope="col" class="px-3 py-2 font-semibold text-right">Taxa nominal a.a.</th>
+                <th scope="col" class="px-3 py-2 font-semibold text-right">Taxa efetiva a.a.</th>
+                <th scope="col" class="px-3 py-2 font-semibold text-right">Taxa efetiva a.m.</th>
+              </tr>
+            </thead>
+            <tbody id="loan-sobras-body" class="divide-y divide-[var(--border-color)]">
+              <tr>
+                <td colspan="4" class="px-3 py-4 text-center text-[var(--text-secondary)] italic">Aguardando calculo...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Disclaimers -->
+      <div class="space-y-2 text-xs text-[var(--text-secondary)]">
+        <p>
+          <strong>IOF estimado:</strong> calculado conforme Decreto 12.499/2025 — 0,38% fixo + 0,0082%/dia (limitado a 365 dias).
+          Valores podem variar conforme regulamentacao vigente.
+        </p>
+        <p>
+          <strong>Aviso:</strong> Simulador educacional — nao constitui recomendacao financeira.
+          Valores sao estimativas e podem divergir dos resultados reais contratados.
+          Sobras nao sao garantidas e dependem do resultado anual aprovado em assembleia.
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  import { parcelaPrice, calcularCET, taxaMensalParaAnual, custoComSobras } from '../lib/calculator.js';
+  import { fetchTR } from '../lib/bcb-api.js';
+  import { loadCooperforteRates } from '../lib/data-loader.js';
+  import { formatBRL, formatPercent } from '../lib/formatters.js';
+  import Chart from 'chart.js/auto';
+
+  // ── Product labels ──
+  const PRODUCT_LABELS = {
+    consignado_direto: 'Consignado Direto',
+    consignado_portabilidade: 'Consig. Portabilidade',
+    credito_inicial: 'Credito Inicial',
+    multicredito: 'MultiCredito',
+    credito_garantido: 'Credito Garantido',
+    credcooper40: 'CredCooper40',
+    credito_trabalhador: 'Cred. Trabalhador',
+  };
+
+  const ALL_PRODUCTS = Object.keys(PRODUCT_LABELS);
+
+  // ── State ──
+  const state = {
+    valor: 50000,
+    prazo: 24,
+    produto: 'todos',
+    tr: null,
+    rates: null,
+  };
+
+  // ── DOM refs ──
+  const valorSlider = document.getElementById('loan-valor-slider');
+  const valorInput = document.getElementById('loan-valor-input');
+  const valorDisplay = document.getElementById('loan-valor-display');
+  const prazoSlider = document.getElementById('loan-prazo-slider');
+  const prazoInput = document.getElementById('loan-prazo-input');
+  const prazoDisplay = document.getElementById('loan-prazo-display');
+  const produtoSelect = document.getElementById('loan-produto');
+
+  // Metric cards
+  const metricParcela = document.getElementById('loan-metric-parcela');
+  const metricParcelaProduto = document.getElementById('loan-metric-parcela-produto');
+  const metricTotal = document.getElementById('loan-metric-total');
+  const metricTotalProduto = document.getElementById('loan-metric-total-produto');
+  const metricCET = document.getElementById('loan-metric-cet');
+  const metricCETProduto = document.getElementById('loan-metric-cet-produto');
+
+  // Chart instance
+  let chartInstance = null;
+
+  // ── Debounce ──
+  let debounceTimer = null;
+  function debounce(fn, delay = 150) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(fn, delay);
+  }
+
+  // ── Bidirectional sync ──
+  function syncValor(source) {
+    const val = Math.max(1000, Math.min(500000, Number(source.value) || 1000));
+    state.valor = val;
+    if (source !== valorSlider) valorSlider.value = val;
+    if (source !== valorInput) valorInput.value = val;
+    valorDisplay.textContent = formatBRL(val);
+    debounce(recalcular);
+  }
+
+  function syncPrazo(source) {
+    const val = Math.max(4, Math.min(96, Math.round(Number(source.value) || 4)));
+    state.prazo = val;
+    if (source !== prazoSlider) prazoSlider.value = val;
+    if (source !== prazoInput) prazoInput.value = val;
+    prazoDisplay.textContent = `${val} meses`;
+    debounce(recalcular);
+  }
+
+  valorSlider.addEventListener('input', () => syncValor(valorSlider));
+  valorInput.addEventListener('input', () => syncValor(valorInput));
+  prazoSlider.addEventListener('input', () => syncPrazo(prazoSlider));
+  prazoInput.addEventListener('input', () => syncPrazo(prazoInput));
+
+  produtoSelect.addEventListener('change', () => {
+    state.produto = produtoSelect.value;
+    debounce(recalcular);
+  });
+
+  // Listen for rate input changes
+  const rateContainer = document.getElementById('rate-inputs-emprestimos');
+  if (rateContainer) {
+    rateContainer.addEventListener('input', () => debounce(recalcular));
+  }
+
+  // ── Get rate from rate-input field or from loaded data ──
+  function getProductRate(key) {
+    // Check if user has overridden the rate via rate input field
+    const inputEl = document.querySelector(`[data-rate="${key}"]`);
+    if (inputEl && inputEl.value !== '' && !inputEl.disabled) {
+      return parseFloat(inputEl.value);
+    }
+    if (inputEl && inputEl.value !== '') {
+      return parseFloat(inputEl.value);
+    }
+    // Fallback to loaded rates
+    if (state.rates && state.rates.emprestimos && state.rates.emprestimos[key]) {
+      return state.rates.emprestimos[key].taxa_am;
+    }
+    return null;
+  }
+
+  function getTRMensal() {
+    const trInput = document.querySelector('[data-rate="tr"]');
+    if (trInput && trInput.value !== '') {
+      return parseFloat(trInput.value) / 100; // Convert from % to decimal
+    }
+    if (state.tr !== null) {
+      return state.tr / 100;
+    }
+    return 0;
+  }
+
+  // M-2 fix: read IOF overrides from rate input fields
+  function calcularIOFLocal(pv, parcelas) {
+    const fixoInput = document.querySelector('[data-rate="iof_fixo"]');
+    const diarioInput = document.querySelector('[data-rate="iof_diario"]');
+    // Read from inputs (values are in %, e.g. 0.38 and 0.0082)
+    const iofFixoPct = (fixoInput && fixoInput.value !== '') ? parseFloat(fixoInput.value) : 0.38;
+    const iofDiarioPct = (diarioInput && diarioInput.value !== '') ? parseFloat(diarioInput.value) : 0.0082;
+    const iofFixo = iofFixoPct / 100;   // 0.38% -> 0.0038
+    const iofDiario = iofDiarioPct / 100; // 0.0082% -> 0.000082
+    const dias = Math.min(Math.max(0, parcelas) * 30, 365);
+    return pv * iofFixo + pv * iofDiario * dias;
+  }
+
+  function getDevolucaoPP() {
+    const devInput = document.querySelector('[data-rate="devolucao_sobras"]');
+    if (devInput && devInput.value !== '') {
+      return parseFloat(devInput.value) / 100; // p.p. to decimal
+    }
+    if (state.rates && state.rates.sobras) {
+      return state.rates.sobras.emprestimos_devolucao_pp_aa / 100;
+    }
+    return 0.015;
+  }
+
+  // ── Check constraints ──
+  function checkConstraints(key, valor, prazo) {
+    if (!state.rates || !state.rates.emprestimos || !state.rates.emprestimos[key]) {
+      return { available: false, reason: 'Dados nao carregados' };
+    }
+    const prod = state.rates.emprestimos[key];
+
+    if (key === 'credito_inicial' && prod.valor_max && valor > prod.valor_max) {
+      return { available: false, reason: `Valor maximo ${formatBRL(prod.valor_max)}` };
+    }
+
+    if (prod.prazo_min && prazo < prod.prazo_min) {
+      return { available: false, reason: `Prazo minimo ${prod.prazo_min} meses` };
+    }
+
+    if (prod.prazo_max && prazo > prod.prazo_max) {
+      return { available: false, reason: `Prazo maximo ${prod.prazo_max} meses` };
+    }
+
+    return { available: true, reason: '' };
+  }
+
+  // ── Main calculation ──
+  function recalcular() {
+    const { valor, prazo, produto } = state;
+    const products = produto === 'todos' ? ALL_PRODUCTS : [produto];
+
+    const results = [];
+    const unavailable = [];
+
+    for (const key of products) {
+      const taxaAmRaw = getProductRate(key);
+
+      // Skip if no rate (e.g., credito_trabalhador without user input)
+      if (taxaAmRaw === null || isNaN(taxaAmRaw)) {
+        unavailable.push({
+          key,
+          label: PRODUCT_LABELS[key],
+          reason: 'Taxa nao definida — preencha em "Ajustar taxas"',
+        });
+        continue;
+      }
+
+      const constraint = checkConstraints(key, valor, prazo);
+      if (!constraint.available) {
+        unavailable.push({
+          key,
+          label: PRODUCT_LABELS[key],
+          reason: constraint.reason,
+        });
+        continue;
+      }
+
+      let taxaMensal = taxaAmRaw / 100; // Convert from % to decimal
+
+      // Credito Garantido: add TR to base rate
+      if (key === 'credito_garantido') {
+        taxaMensal += getTRMensal();
+      }
+
+      const iof = calcularIOFLocal(valor, prazo);
+      const parcela = parcelaPrice(valor + iof, taxaMensal, prazo);
+      const totalPago = parcela * prazo;
+      const juros = totalPago - valor;
+      const cet = calcularCET(valor, parcela, prazo);
+      const taxaAnual = taxaMensalParaAnual(taxaMensal);
+
+      results.push({
+        key,
+        label: PRODUCT_LABELS[key],
+        taxaAm: taxaAmRaw,
+        taxaMensal,
+        parcela,
+        totalPago,
+        juros,
+        iof,
+        cetMensal: cet.mensal,
+        cetAnual: cet.anual,
+        taxaAnual,
+        principal: valor,
+      });
+    }
+
+    // Sort by total pago ascending
+    results.sort((a, b) => a.totalPago - b.totalPago);
+
+    // Update metric cards
+    updateMetrics(results);
+
+    // Update table
+    updateTable(results, unavailable);
+
+    // Update chart
+    updateChart(results);
+
+    // Update sobras table
+    updateSobras(results);
+  }
+
+  function updateMetrics(results) {
+    if (results.length === 0) {
+      metricParcela.textContent = '--';
+      metricParcelaProduto.textContent = '';
+      metricTotal.textContent = '--';
+      metricTotalProduto.textContent = '';
+      metricCET.textContent = '--';
+      metricCETProduto.textContent = '';
+      return;
+    }
+
+    // Best parcela (lowest)
+    const bestParcela = results.reduce((a, b) => a.parcela < b.parcela ? a : b);
+    metricParcela.textContent = formatBRL(bestParcela.parcela);
+    metricParcelaProduto.textContent = bestParcela.label;
+
+    // Best total (already sorted)
+    metricTotal.textContent = formatBRL(results[0].totalPago);
+    metricTotalProduto.textContent = results[0].label;
+
+    // Best CET (lowest monthly)
+    const bestCET = results.reduce((a, b) => a.cetMensal < b.cetMensal ? a : b);
+    metricCET.textContent = formatPercent(bestCET.cetMensal * 100) + ' a.m.';
+    metricCETProduto.textContent = bestCET.label;
+  }
+
+  function updateTable(results, unavailable) {
+    const tbody = document.getElementById('loan-table-body');
+    if (!tbody) return;
+
+    let html = '';
+
+    // Best total key for highlighting
+    const bestKey = results.length > 0 ? results[0].key : null;
+
+    for (const r of results) {
+      const isBest = r.key === bestKey;
+      const rowClass = isBest
+        ? 'bg-cooperforte/5 dark:bg-cooperforte/10 font-medium'
+        : '';
+      html += `
+        <tr class="${rowClass}">
+          <td class="px-4 py-3 font-medium text-[var(--text-primary)]">
+            ${isBest ? '<span class="inline-block w-2 h-2 rounded-full bg-cooperforte mr-2"></span>' : ''}
+            ${r.label}
+          </td>
+          <td class="px-4 py-3 text-right">${formatPercent(r.taxaAm)}</td>
+          <td class="px-4 py-3 text-right">${formatBRL(r.parcela)}</td>
+          <td class="px-4 py-3 text-right">${formatBRL(r.totalPago)}</td>
+          <td class="px-4 py-3 text-right">${formatBRL(r.juros)}</td>
+          <td class="px-4 py-3 text-right">${formatBRL(r.iof)}</td>
+          <td class="px-4 py-3 text-right">${formatPercent(r.cetMensal * 100)}</td>
+          <td class="px-4 py-3 text-right">${formatPercent(r.cetAnual * 100)}</td>
+        </tr>
+      `;
+    }
+
+    // Unavailable products (grayed out)
+    for (const u of unavailable) {
+      html += `
+        <tr class="opacity-50" title="${u.reason}">
+          <td class="px-4 py-3 text-[var(--text-secondary)]">
+            <span class="inline-block w-2 h-2 rounded-full bg-gray-400 mr-2"></span>
+            ${u.label}
+          </td>
+          <td colspan="7" class="px-4 py-3 text-center text-xs italic text-[var(--text-secondary)]">${u.reason}</td>
+        </tr>
+      `;
+    }
+
+    if (!html) {
+      html = `<tr><td colspan="8" class="px-4 py-8 text-center text-[var(--text-secondary)] italic">Nenhum produto disponivel para os parametros selecionados</td></tr>`;
+    }
+
+    tbody.innerHTML = html;
+  }
+
+  function updateChart(results) {
+    const canvas = document.getElementById('loan-chart-bar');
+    if (!canvas) return;
+
+    if (results.length === 0) {
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+      return;
+    }
+
+    const labels = results.map(r => r.label);
+    const principals = results.map(r => r.principal);
+    const iofs = results.map(r => r.iof);
+    const juros = results.map(r => r.juros);
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#9ca3af' : '#6b7280';
+    const gridColor = isDark ? '#374151' : '#e5e7eb';
+
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: 'Principal',
+          data: principals,
+          backgroundColor: isDark ? '#4b5563' : '#9ca3af',
+        },
+        {
+          label: 'IOF',
+          data: iofs,
+          backgroundColor: isDark ? '#d97706' : '#f59e0b',
+        },
+        {
+          label: 'Juros',
+          data: juros,
+          backgroundColor: isDark ? '#dc2626' : '#ef4444',
+        },
+      ],
+    };
+
+    const options = {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${formatBRL(ctx.raw)}`,
+          },
+        },
+        legend: {
+          labels: { color: textColor },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: textColor,
+            callback: (v) => formatBRL(v),
+          },
+          grid: { color: gridColor },
+        },
+        y: {
+          stacked: true,
+          ticks: { color: textColor },
+          grid: { display: false },
+        },
+      },
+    };
+
+    if (chartInstance) {
+      chartInstance.data = data;
+      chartInstance.options = options;
+      chartInstance.update();
+    } else {
+      // Set dynamic height based on number of products
+      canvas.parentElement.style.minHeight = `${Math.max(300, results.length * 60)}px`;
+      chartInstance = new Chart(canvas, { type: 'bar', data, options });
+    }
+  }
+
+  function updateSobras(results) {
+    const tbody = document.getElementById('loan-sobras-body');
+    if (!tbody) return;
+
+    if (results.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-[var(--text-secondary)] italic">Nenhum produto calculado</td></tr>';
+      return;
+    }
+
+    const devolucaoPP = getDevolucaoPP();
+
+    let html = '';
+    for (const r of results) {
+      const sobras = custoComSobras(r.taxaAnual, devolucaoPP);
+      html += `
+        <tr>
+          <td class="px-3 py-2 font-medium text-[var(--text-primary)]">${r.label}</td>
+          <td class="px-3 py-2 text-right">${formatPercent(r.taxaAnual * 100)}</td>
+          <td class="px-3 py-2 text-right text-cooperforte font-medium">${formatPercent(sobras.taxaAnualEfetiva * 100)}</td>
+          <td class="px-3 py-2 text-right text-cooperforte font-medium">${formatPercent(sobras.taxaMensalEfetiva * 100)}</td>
+        </tr>
+      `;
+    }
+
+    tbody.innerHTML = html;
+  }
+
+  // ── Dark mode observer (re-render chart) ──
+  const darkObserver = new MutationObserver(() => {
+    if (chartInstance) {
+      debounce(recalcular, 50);
+    }
+  });
+  darkObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+  // ── Initialization ──
+  async function init() {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+    // Fetch TR and rates in parallel
+    const [trData, rates] = await Promise.all([
+      fetchTR(),
+      loadCooperforteRates(base),
+    ]);
+
+    // Store TR
+    if (trData && trData.valor) {
+      state.tr = parseFloat(trData.valor.replace(',', '.'));
+    }
+
+    // Store rates
+    if (rates) {
+      state.rates = rates;
+
+      // Populate rate input fields
+      const emprestimos = rates.emprestimos || {};
+      for (const [key, prod] of Object.entries(emprestimos)) {
+        if (prod.taxa_am !== null && prod.taxa_am !== undefined) {
+          const input = document.querySelector(`[data-rate="${key}"]`);
+          if (input) {
+            input.value = prod.taxa_am;
+          }
+        }
+      }
+
+      // Populate TR field
+      if (state.tr !== null) {
+        const trInput = document.querySelector('[data-rate="tr"]');
+        if (trInput) trInput.value = state.tr;
+      }
+
+      // Populate devolucao sobras
+      if (rates.sobras && rates.sobras.emprestimos_devolucao_pp_aa) {
+        const devInput = document.querySelector('[data-rate="devolucao_sobras"]');
+        if (devInput) devInput.value = rates.sobras.emprestimos_devolucao_pp_aa;
+      }
+    }
+
+    recalcular();
+  }
+
+  init();
+</script>

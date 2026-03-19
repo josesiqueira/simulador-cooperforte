@@ -213,7 +213,7 @@ export function calcularIOF(pv, parcelas) {
  * @returns {{ mensal: number, anual: number }}
  */
 export function calcularCET(valorRecebido, parcela, n) {
-  let lo = 0.0001, hi = 0.15;
+  let lo = 0.0001, hi = 0.50;
   for (let i = 0; i < 100; i++) {
     const mid = (lo + hi) / 2;
     let vp = 0;

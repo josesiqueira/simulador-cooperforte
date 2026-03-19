@@ -1,7 +1,20 @@
 @import 'tailwindcss';
 
-/* Dark mode CSS variables */
+/* ── Cooperforte green shades ── */
 :root {
+  --cooperforte-50: #e6f9ee;
+  --cooperforte-100: #b3efd0;
+  --cooperforte-200: #80e5b2;
+  --cooperforte-300: #4ddb94;
+  --cooperforte-400: #26d37d;
+  --cooperforte-500: #00A651;
+  --cooperforte-600: #009548;
+  --cooperforte-700: #008C45;
+  --cooperforte-800: #006b35;
+  --cooperforte-900: #004a24;
+  --cooperforte-dark: #008C45;
+
+  /* Surface and text tokens */
   --surface-bg: #ffffff;
   --surface-card: #f9fafb;
   --text-primary: #111827;
@@ -17,8 +30,110 @@
   --border-color: #374151;
 }
 
+/* ── Base body transitions for dark mode ── */
 body {
   background-color: var(--surface-bg);
   color: var(--text-primary);
-  transition: background-color 0.2s, color 0.2s;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for dark-mode on common elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* Disable transitions on elements that use their own animations */
+[data-no-transition], [data-no-transition] * {
+  transition: none !important;
+}
+
+/* ── Custom slider / range input styling ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-color);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cooperforte-500);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cooperforte-500);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.3);
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.3);
+}
+
+/* Accent color for checkboxes, radios, etc */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--cooperforte-500);
+}
+
+/* ── Focus ring utility ── */
+.focus-cooperforte:focus,
+.focus-cooperforte:focus-visible {
+  outline: 2px solid var(--cooperforte-500);
+  outline-offset: 2px;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--cooperforte-500);
+  outline-offset: 2px;
+}
+
+/* ── Number input: hide spinner arrows ── */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ── Skip link styles ── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: var(--cooperforte-500);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.skip-link:focus {
+  top: 0;
 }

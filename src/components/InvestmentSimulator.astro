@@ -1,0 +1,714 @@
+---
+import ScenarioSelector from './ScenarioSelector.astro';
+import RateInputs from './RateInputs.astro';
+import ResultsTable from './ResultsTable.astro';
+import ComparisonChart from './ComparisonChart.astro';
+---
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <!-- ── INPUTS PANEL ─────────────────────────────────── -->
+  <aside class="lg:col-span-4 space-y-6">
+
+    <!-- Valor do investimento -->
+    <div>
+      <label for="inv-valor-range" class="block text-sm font-semibold text-[var(--text-primary)] mb-2">
+        Valor do investimento
+      </label>
+      <output id="inv-valor-display" class="block text-xl font-bold text-cooperforte mb-2" for="inv-valor-range">
+        R$ 200.000,00
+      </output>
+      <input
+        type="range"
+        id="inv-valor-range"
+        min="200" max="2000000" step="100" value="200000"
+        class="w-full accent-cooperforte"
+      />
+      <div class="mt-2">
+        <input
+          type="number"
+          id="inv-valor-number"
+          min="200" max="2000000" step="100" value="200000"
+          class="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+          aria-label="Valor do investimento em reais"
+        />
+      </div>
+    </div>
+
+    <!-- Prazo em meses -->
+    <div>
+      <label for="inv-prazo-range" class="block text-sm font-semibold text-[var(--text-primary)] mb-2">
+        Prazo em meses
+      </label>
+      <output id="inv-prazo-display" class="block text-xl font-bold text-cooperforte mb-2" for="inv-prazo-range">
+        24 meses
+      </output>
+      <input
+        type="range"
+        id="inv-prazo-range"
+        min="1" max="60" step="1" value="24"
+        class="w-full accent-cooperforte"
+      />
+      <div class="mt-2">
+        <input
+          type="number"
+          id="inv-prazo-number"
+          min="1" max="60" step="1" value="24"
+          class="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+          aria-label="Prazo em meses"
+        />
+      </div>
+    </div>
+
+    <!-- Produto -->
+    <div>
+      <label for="inv-produto" class="block text-sm font-semibold text-[var(--text-primary)] mb-2">
+        Produto
+      </label>
+      <select
+        id="inv-produto"
+        class="w-full rounded-md border border-[var(--border-color)] bg-[var(--surface-bg)] px-3 py-2 text-sm text-[var(--text-primary)]"
+      >
+        <option value="todos">Comparar todos</option>
+        <option value="rdc_i">RDC-i</option>
+        <option value="rdc_q">RDC-q</option>
+        <option value="rdc_sq">RDC-sq</option>
+        <option value="lfc_pos">LFC Pos</option>
+        <option value="lfc_pre">LFC Pre</option>
+      </select>
+    </div>
+
+    <!-- Cenario Selic -->
+    <div id="inv-scenario-wrapper">
+      <ScenarioSelector />
+    </div>
+
+    <!-- Toggle sobras -->
+    <div class="flex items-center gap-3">
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="inv-sobras" class="sr-only peer" role="switch" />
+        <div class="w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full peer-checked:bg-cooperforte transition-colors after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+      </label>
+      <span class="text-sm font-medium text-[var(--text-primary)]">Incluir sobras (estimativa)</span>
+    </div>
+
+    <!-- Rate inputs -->
+    <RateInputs type="investimentos" />
+  </aside>
+
+  <!-- ── RESULTS PANEL ────────────────────────────────── -->
+  <section class="lg:col-span-8 space-y-6">
+
+    <!-- Metric cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Rend. Bruto</p>
+        <p id="inv-metric-bruto" class="mt-1 text-lg font-bold text-[var(--text-primary)]">--</p>
+      </div>
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">IR</p>
+        <p id="inv-metric-ir" class="mt-1 text-lg font-bold text-red-600 dark:text-red-400">--</p>
+      </div>
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Rend. Liquido</p>
+        <p id="inv-metric-liquido" class="mt-1 text-lg font-bold text-cooperforte">--</p>
+      </div>
+      <div class="rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+        <p class="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wide">Total na Conta</p>
+        <p id="inv-metric-total" class="mt-1 text-lg font-bold text-[var(--text-primary)]">--</p>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div id="inv-alerts" class="space-y-2"></div>
+
+    <!-- Results table -->
+    <ResultsTable id="inv-table" type="investimentos" />
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-3">Composicao por Produto</h3>
+        <ComparisonChart id="inv-chart-bar" ariaLabel="Grafico de barras empilhadas comparando investimentos por produto" />
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-[var(--text-primary)] mb-3">Trajetoria da Selic</h3>
+        <ComparisonChart id="inv-chart-line" ariaLabel="Grafico de linha com trajetoria da Selic nos 3 cenarios" />
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-xs text-[var(--text-secondary)] space-y-1 border-t border-[var(--border-color)] pt-4">
+      <p>Dados: <span id="inv-data-date">--</span> | Fonte: BCB, cf.coop.br</p>
+      <p>Simulador educacional — nao constitui recomendacao financeira. Valores sao estimativas.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { rendimentoPosFixado, rendimentoPreFixado, calcularIR, sobrasDiscretas, construirCenarios } from '../lib/calculator.js';
+  import { fetchSelic, fetchCDI } from '../lib/bcb-api.js';
+  import { loadCooperforteRates, loadFocusData } from '../lib/data-loader.js';
+  import { formatBRL, formatPercent, formatNumber } from '../lib/formatters.js';
+  import Chart from 'chart.js/auto';
+
+  // ── STATE ────────────────────────────────────────────
+  const state = {
+    valor: 200000,
+    prazo: 24,
+    produto: 'todos',
+    cenario: 'base',
+    incluirSobras: false,
+    selic: null,
+    cdi: null,
+    rates: null,
+    focus: null,
+  };
+
+  // ── PRODUCT METADATA ─────────────────────────────────
+  const PRODUCTS = {
+    rdc_i:   { label: 'RDC-i',    type: 'pos', color: '#22c55e' },
+    rdc_q:   { label: 'RDC-q',    type: 'pos', color: '#16a34a' },
+    rdc_sq:  { label: 'RDC-sq',   type: 'pos', color: '#15803d' },
+    lfc_pos: { label: 'LFC Pos',  type: 'pos', color: '#eab308' },
+    lfc_pre: { label: 'LFC Pre',  type: 'pre', color: '#f97316' },
+  };
+
+  // ── DOM REFERENCES ───────────────────────────────────
+  const els = {
+    valorRange:  document.getElementById('inv-valor-range'),
+    valorNumber: document.getElementById('inv-valor-number'),
+    valorDisplay: document.getElementById('inv-valor-display'),
+    prazoRange:  document.getElementById('inv-prazo-range'),
+    prazoNumber: document.getElementById('inv-prazo-number'),
+    prazoDisplay: document.getElementById('inv-prazo-display'),
+    produto:     document.getElementById('inv-produto'),
+    sobras:      document.getElementById('inv-sobras'),
+    metricBruto: document.getElementById('inv-metric-bruto'),
+    metricIR:    document.getElementById('inv-metric-ir'),
+    metricLiquido: document.getElementById('inv-metric-liquido'),
+    metricTotal: document.getElementById('inv-metric-total'),
+    alerts:      document.getElementById('inv-alerts'),
+    tableBody:   document.getElementById('inv-table-body'),
+    dataDate:    document.getElementById('inv-data-date'),
+    scenarioWrapper: document.getElementById('inv-scenario-wrapper'),
+  };
+
+  // ── CHARTS ───────────────────────────────────────────
+  let barChart = null;
+  let lineChart = null;
+
+  // ── DEBOUNCE ─────────────────────────────────────────
+  let debounceTimer = null;
+  function debouncedRecalcular() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(recalcular, 150);
+  }
+
+  // ── BIDIRECTIONAL SYNC ───────────────────────────────
+  function syncValor(source) {
+    if (source === 'range') {
+      state.valor = Number(els.valorRange.value);
+      els.valorNumber.value = state.valor;
+    } else {
+      state.valor = Math.max(200, Math.min(2000000, Number(els.valorNumber.value) || 200));
+      els.valorRange.value = state.valor;
+    }
+    els.valorDisplay.textContent = formatBRL(state.valor);
+    debouncedRecalcular();
+  }
+
+  function syncPrazo(source) {
+    if (source === 'range') {
+      state.prazo = Number(els.prazoRange.value);
+      els.prazoNumber.value = state.prazo;
+    } else {
+      state.prazo = Math.max(1, Math.min(60, Number(els.prazoNumber.value) || 1));
+      els.prazoRange.value = state.prazo;
+    }
+    els.prazoDisplay.textContent = `${state.prazo} ${state.prazo === 1 ? 'mes' : 'meses'}`;
+    // Hide scenarios if prazo <= 6
+    if (els.scenarioWrapper) {
+      els.scenarioWrapper.style.display = state.prazo <= 6 ? 'none' : '';
+    }
+    debouncedRecalcular();
+  }
+
+  // ── EVENT LISTENERS ──────────────────────────────────
+  els.valorRange.addEventListener('input', () => syncValor('range'));
+  els.valorNumber.addEventListener('input', () => syncValor('number'));
+  els.prazoRange.addEventListener('input', () => syncPrazo('range'));
+  els.prazoNumber.addEventListener('input', () => syncPrazo('number'));
+
+  els.produto.addEventListener('change', () => {
+    state.produto = els.produto.value;
+    recalcular();
+  });
+
+  els.sobras.addEventListener('change', () => {
+    state.incluirSobras = els.sobras.checked;
+    recalcular();
+  });
+
+  // Scenario radio buttons
+  document.querySelectorAll('input[name="cenario"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      state.cenario = radio.value;
+      recalcular();
+    });
+  });
+
+  // Rate input changes
+  document.querySelectorAll('#rate-inputs-investimentos .rate-input').forEach(input => {
+    input.addEventListener('input', debouncedRecalcular);
+  });
+
+  // ── HELPER: get CDI trajectory for scenario ──────────
+  function getCDITrajectory(trimestres) {
+    const cdiAa = getOverrideOrDefault('cdi');
+    if (state.prazo <= 6 || !state.focus) {
+      // Constant CDI
+      return Array(trimestres).fill(cdiAa / 100);
+    }
+    // W-02: flatten focus.json projecoes
+    const focusFlat = Object.fromEntries(
+      Object.entries(state.focus.projecoes).map(([y, v]) => [y, v.selic_fim])
+    );
+    const selicAtual = getOverrideOrDefault('selic');
+    const cenarios = construirCenarios(selicAtual, focusFlat, trimestres);
+    // CDI tracks Selic closely; use scenario trajectory directly
+    return cenarios[state.cenario] || cenarios.base;
+  }
+
+  // ── HELPER: read rate from override input or default ─
+  function getOverrideOrDefault(rateKey) {
+    const inputMap = {
+      selic: 'rate-selic',
+      cdi: 'rate-cdi',
+      spread_rdc_q: 'rate-spread-rdc-q',
+      spread_rdc_sq: 'rate-spread-rdc-sq',
+      spread_lfc_pos: 'rate-spread-lfc-pos',
+      sobras_cdi_pct: 'rate-sobras-cdi',
+      lfc_pre_taxa: 'rate-lfc-pre',
+    };
+    const el = document.getElementById(inputMap[rateKey]);
+    if (el && el.value !== '') return parseFloat(el.value);
+    return 0;
+  }
+
+  // ── ALERT HELPER ─────────────────────────────────────
+  function showAlert(msg, type = 'warning') {
+    const colors = {
+      warning: 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-600 dark:bg-amber-900/30 dark:text-amber-200',
+      info: 'border-blue-300 bg-blue-50 text-blue-800 dark:border-blue-600 dark:bg-blue-900/30 dark:text-blue-200',
+    };
+    return `<div class="flex items-center gap-2 rounded-lg border p-3 text-sm ${colors[type] || colors.warning}">
+      <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86l-8.6 14.9A1 1 0 0 0 2.56 20.5h18.88a1 1 0 0 0 .87-1.74l-8.6-14.9a1 1 0 0 0-1.74 0z" />
+      </svg>
+      <span>${msg}</span>
+    </div>`;
+  }
+
+  // ── COMPUTE ONE PRODUCT ──────────────────────────────
+  function computeProduct(key) {
+    const meta = PRODUCTS[key];
+    const inv = state.rates?.investimentos?.[key];
+    if (!inv) return null;
+
+    const trimestres = Math.ceil(state.prazo / 3);
+    const cdiTrajectory = getCDITrajectory(trimestres);
+
+    let bruto = 0;
+    let fator = 1;
+
+    if (meta.type === 'pos') {
+      // M-1 fix: use user override for spread if unlocked, else JSON default
+      const spreadMap = { rdc_q: 'spread_rdc_q', rdc_sq: 'spread_rdc_sq', lfc_pos: 'spread_lfc_pos' };
+      const spreadRateKey = spreadMap[key];
+      const spreadRaw = spreadRateKey ? getOverrideOrDefault(spreadRateKey) : (inv.spread_aa || 0);
+      const spreadAa = (spreadRaw || 0) / 100;
+      const result = rendimentoPosFixado(state.valor, cdiTrajectory, spreadAa, 63);
+      bruto = result.bruto;
+      fator = result.fator;
+    } else if (meta.type === 'pre') {
+      const taxaAa = getOverrideOrDefault('lfc_pre_taxa');
+      if (!taxaAa) return null; // Cannot compute without rate
+      const duTotal = state.prazo * 21; // ~21 business days per month
+      const result = rendimentoPreFixado(state.valor, taxaAa / 100, duTotal);
+      bruto = result.bruto;
+      fator = result.fator;
+    }
+
+    // IR
+    const diasCorridos = state.prazo * 30;
+    const irResult = calcularIR(bruto, diasCorridos, state.rates.ir_regressivo);
+
+    // Sobras
+    let sobrasTotal = 0;
+    if (state.incluirSobras && meta.type === 'pos') {
+      const sobrasPctCdi = getOverrideOrDefault('sobras_cdi_pct');
+      // sobrasPctCdi is e.g. 116.1 meaning 116.1% of CDI → excess = (116.1/100 - 1) = 0.161
+      const sobrasFrac = (sobrasPctCdi / 100) - 1;
+      if (sobrasFrac > 0) {
+        // Group CDI trajectory by year (4 trimestres each)
+        const cdiPorExercicio = [];
+        for (let i = 0; i < cdiTrajectory.length; i += 4) {
+          cdiPorExercicio.push(cdiTrajectory.slice(i, i + 4));
+        }
+        const sobrasResult = sobrasDiscretas(state.valor, cdiPorExercicio, sobrasFrac, 63);
+        sobrasTotal = sobrasResult.total;
+      }
+    }
+
+    const liquido = irResult.liquido;
+    const total = state.valor + liquido + sobrasTotal;
+    const rentabLiquida = (total / state.valor - 1) * 100;
+
+    return {
+      key,
+      label: meta.label,
+      color: meta.color,
+      bruto,
+      ir: irResult.ir,
+      aliquotaIR: irResult.aliquota,
+      liquido,
+      sobras: sobrasTotal,
+      total,
+      rentabLiquida,
+      fgcoop: inv.fgcoop || false,
+    };
+  }
+
+  // ── RECALCULAR ───────────────────────────────────────
+  function recalcular() {
+    if (!state.rates) return;
+
+    const productKeys = state.produto === 'todos'
+      ? Object.keys(PRODUCTS)
+      : [state.produto];
+
+    const results = [];
+    const unavailable = [];
+    for (const key of productKeys) {
+      // M-3 fix: check min_aplicacao before computing
+      const inv = state.rates?.investimentos?.[key];
+      if (inv && inv.min_aplicacao && state.valor < inv.min_aplicacao) {
+        unavailable.push({
+          key,
+          label: PRODUCTS[key]?.label || key,
+          reason: `Aplicacao minima: ${formatBRL(inv.min_aplicacao)}`,
+        });
+        continue;
+      }
+      const r = computeProduct(key);
+      if (r) results.push(r);
+    }
+
+    // ── Update alerts ──
+    const alertsHtml = [];
+
+    // FGCoop warning
+    const hasRDC = results.some(r => r.fgcoop);
+    if (state.valor > 250000 && hasRDC) {
+      alertsHtml.push(showAlert(
+        `Valor acima de R$ 250.000 — investimentos RDC sao cobertos pelo FGCoop ate esse limite.`,
+        'warning'
+      ));
+    }
+
+    // LFC prazo warning
+    if (productKeys.some(k => k === 'lfc_pos' || k === 'lfc_pre') && state.prazo !== 24) {
+      alertsHtml.push(showAlert(
+        `LFC tem prazo fixo de 24 meses. A simulacao com ${state.prazo} meses e apenas ilustrativa — considere usar RDC.`,
+        'info'
+      ));
+    }
+
+    // LFC Pre empty rate
+    if (productKeys.includes('lfc_pre') && !getOverrideOrDefault('lfc_pre_taxa')) {
+      alertsHtml.push(showAlert(
+        `Insira a taxa do LFC Pre em "Ajustar taxas". A taxa muda a cada emissao.`,
+        'warning'
+      ));
+    }
+
+    els.alerts.innerHTML = alertsHtml.join('');
+
+    // ── Update metric cards (use first/best result) ──
+    if (results.length > 0) {
+      // For "todos", show the best (highest total)
+      const best = results.reduce((a, b) => a.total > b.total ? a : b);
+      els.metricBruto.textContent = formatBRL(best.bruto);
+      els.metricIR.textContent = `- ${formatBRL(best.ir)}`;
+      els.metricLiquido.textContent = formatBRL(best.liquido);
+      els.metricTotal.textContent = formatBRL(best.total);
+    } else {
+      els.metricBruto.textContent = '--';
+      els.metricIR.textContent = '--';
+      els.metricLiquido.textContent = '--';
+      els.metricTotal.textContent = '--';
+    }
+
+    // ── Update table ──
+    if (results.length === 0) {
+      els.tableBody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-[var(--text-secondary)] italic">Sem resultados para exibir</td></tr>`;
+    } else {
+      // Sort by total descending
+      results.sort((a, b) => b.total - a.total);
+      const bestKey = results[0].key;
+      els.tableBody.innerHTML = results.map(r => {
+        const highlight = r.key === bestKey ? 'bg-cooperforte/5 font-semibold' : '';
+        const sobrasCol = state.incluirSobras ? ` + ${formatBRL(r.sobras)}` : '';
+        return `<tr class="${highlight}">
+          <td class="px-4 py-3">
+            <span class="inline-block w-3 h-3 rounded-full mr-2" style="background:${r.color}"></span>
+            ${r.label}
+          </td>
+          <td class="px-4 py-3 text-right">${formatBRL(r.bruto)}</td>
+          <td class="px-4 py-3 text-right text-red-600 dark:text-red-400">${formatBRL(r.ir)} (${formatPercent(r.aliquotaIR, 1)})</td>
+          <td class="px-4 py-3 text-right text-cooperforte">${formatBRL(r.liquido)}${sobrasCol}</td>
+          <td class="px-4 py-3 text-right font-bold">${formatBRL(r.total)}</td>
+          <td class="px-4 py-3 text-right">${formatPercent(r.rentabLiquida, 2)}</td>
+        </tr>`;
+      }).join('');
+
+      // M-3: append unavailable products (grayed out)
+      for (const u of unavailable) {
+        els.tableBody.innerHTML += `<tr class="opacity-50" title="${u.reason}">
+          <td class="px-4 py-3 text-[var(--text-secondary)]">${u.label}</td>
+          <td colspan="5" class="px-4 py-3 text-center text-xs italic text-[var(--text-secondary)]">${u.reason}</td>
+        </tr>`;
+      }
+    }
+
+    // ── Update charts ──
+    updateBarChart(results);
+    updateLineChart();
+  }
+
+  // ── BAR CHART (stacked) ──────────────────────────────
+  function updateBarChart(results) {
+    const ctx = document.getElementById('inv-chart-bar');
+    if (!ctx) return;
+
+    const labels = results.map(r => r.label);
+    const datasets = [
+      {
+        label: 'Principal',
+        data: results.map(() => state.valor),
+        backgroundColor: '#9ca3af',
+      },
+      {
+        label: 'Rend. Liquido',
+        data: results.map(r => r.liquido),
+        backgroundColor: '#22c55e',
+      },
+    ];
+
+    if (state.incluirSobras) {
+      datasets.push({
+        label: 'Sobras',
+        data: results.map(r => r.sobras),
+        backgroundColor: '#eab308',
+      });
+    }
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const textColor = isDark ? '#d1d5db' : '#374151';
+
+    // M-4 fix: destroy chart if no results
+    if (results.length === 0) {
+      if (barChart) { barChart.destroy(); barChart = null; }
+      return;
+    }
+
+    if (barChart) {
+      barChart.data.labels = labels;
+      barChart.data.datasets = datasets;
+      barChart.options.scales.x.ticks.color = textColor;
+      barChart.options.scales.y.ticks.color = textColor;
+      barChart.options.scales.y.grid.color = gridColor;
+      barChart.update();
+    } else {
+      barChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: textColor } },
+            tooltip: {
+              callbacks: {
+                label: (item) => `${item.dataset.label}: ${formatBRL(item.raw)}`,
+              },
+            },
+          },
+          scales: {
+            x: { stacked: true, ticks: { color: textColor } },
+            y: {
+              stacked: true,
+              ticks: {
+                color: textColor,
+                callback: (v) => formatBRL(v),
+              },
+              grid: { color: gridColor },
+            },
+          },
+        },
+      });
+    }
+  }
+
+  // ── LINE CHART (Selic trajectory) ────────────────────
+  function updateLineChart() {
+    const ctx = document.getElementById('inv-chart-line');
+    if (!ctx || !state.focus) {
+      if (lineChart) { lineChart.destroy(); lineChart = null; }
+      return;
+    }
+
+    const trimestres = Math.ceil(state.prazo / 3);
+    const focusFlat = Object.fromEntries(
+      Object.entries(state.focus.projecoes).map(([y, v]) => [y, v.selic_fim])
+    );
+    const selicAtual = getOverrideOrDefault('selic');
+    const cenarios = construirCenarios(selicAtual, focusFlat, trimestres);
+
+    const labels = Array.from({ length: trimestres }, (_, i) => `T${i + 1}`);
+
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const textColor = isDark ? '#d1d5db' : '#374151';
+
+    const datasets = [
+      {
+        label: 'Acelerado',
+        data: cenarios.acelerado.map(v => v * 100),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.1)',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Base',
+        data: cenarios.base.map(v => v * 100),
+        borderColor: '#22c55e',
+        backgroundColor: 'rgba(34,197,94,0.1)',
+        tension: 0.3,
+        fill: false,
+      },
+      {
+        label: 'Gradual',
+        data: cenarios.gradual.map(v => v * 100),
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.1)',
+        tension: 0.3,
+        fill: false,
+      },
+    ];
+
+    if (lineChart) {
+      lineChart.data.labels = labels;
+      lineChart.data.datasets = datasets;
+      lineChart.options.scales.x.ticks.color = textColor;
+      lineChart.options.scales.y.ticks.color = textColor;
+      lineChart.options.scales.y.grid.color = gridColor;
+      lineChart.update();
+    } else {
+      lineChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: textColor } },
+            tooltip: {
+              callbacks: {
+                label: (item) => `${item.dataset.label}: ${formatPercent(item.raw, 2)} a.a.`,
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { color: textColor } },
+            y: {
+              ticks: {
+                color: textColor,
+                callback: (v) => `${formatNumber(v, 1)}%`,
+              },
+              grid: { color: gridColor },
+            },
+          },
+        },
+      });
+    }
+  }
+
+  // ── INITIALIZATION ───────────────────────────────────
+  async function init() {
+    const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+    // Fetch live rates + static data in parallel
+    const [selicResult, cdiResult, ratesData, focusData] = await Promise.allSettled([
+      fetchSelic(),
+      fetchCDI(),
+      loadCooperforteRates(baseUrl),
+      loadFocusData(baseUrl),
+    ]);
+
+    // Extract values
+    if (selicResult.status === 'fulfilled' && selicResult.value) {
+      state.selic = parseFloat(selicResult.value.valor.replace(',', '.'));
+    }
+    if (cdiResult.status === 'fulfilled' && cdiResult.value) {
+      state.cdi = parseFloat(cdiResult.value.valor.replace(',', '.'));
+    }
+    if (ratesData.status === 'fulfilled' && ratesData.value) {
+      state.rates = ratesData.value;
+    }
+    if (focusData.status === 'fulfilled' && focusData.value) {
+      state.focus = focusData.value;
+    }
+
+    // Populate rate input fields with fetched values
+    const rateDefaults = {
+      'rate-selic': state.selic,
+      'rate-cdi': state.cdi,
+      'rate-spread-rdc-q': state.rates?.investimentos?.rdc_q?.spread_aa ?? '',
+      'rate-spread-rdc-sq': state.rates?.investimentos?.rdc_sq?.spread_aa ?? '',
+      'rate-spread-lfc-pos': state.rates?.investimentos?.lfc_pos?.spread_aa ?? '',
+      'rate-sobras-cdi': state.rates?.sobras?.investimentos_cdi_pct ?? '',
+    };
+
+    for (const [id, val] of Object.entries(rateDefaults)) {
+      const el = document.getElementById(id);
+      if (el && val != null && val !== '') {
+        el.value = val;
+      }
+    }
+
+    // Update data date
+    if (state.rates?.updated_at) {
+      els.dataDate.textContent = state.rates.updated_at.split('T')[0];
+    }
+
+    // Initial display
+    els.valorDisplay.textContent = formatBRL(state.valor);
+    els.prazoDisplay.textContent = `${state.prazo} meses`;
+
+    recalcular();
+  }
+
+  // Dark mode observer — update chart colors when toggled
+  const darkObserver = new MutationObserver(() => {
+    if (barChart || lineChart) recalcular();
+  });
+  darkObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  init();
+</script>

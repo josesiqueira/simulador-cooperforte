@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StaleBanner from '../components/StaleBanner.astro';
+import LoanSimulator from '../components/LoanSimulator.astro';
+---
+
+<Layout title="Simulador de Emprestimos — Cooperforte">
+  <StaleBanner />
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+    <h1 class="text-2xl font-bold text-[var(--text-primary)]">Simulador de Emprestimos</h1>
+    <p class="text-sm text-[var(--text-secondary)] mt-1">Compare as linhas de credito da Cooperforte com calculo de parcela, IOF, CET e devolucao de sobras.</p>
+  </div>
+  <LoanSimulator />
+</Layout>

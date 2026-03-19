@@ -3,7 +3,10 @@ interface Props {
   title?: string;
 }
 
-const { title = 'Cooperforte Simulator' } = Astro.props;
+const { title = 'Simulador Cooperforte' } = Astro.props;
+// Ensure base always ends with a slash for safe concatenation
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 ---
 
 <!doctype html>
@@ -12,11 +15,192 @@ const { title = 'Cooperforte Simulator' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Simulador financeiro Cooperforte — investimentos e emprestimos" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title}</title>
+    <!-- Dark mode: apply class before paint to avoid flash -->
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
-  <body class="min-h-screen">
-    <slot />
+  <body class="min-h-screen font-sans flex flex-col">
+    <!-- Skip link -->
+    <a href="#main" class="skip-link">Pular para conteudo</a>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-[var(--border-color)] bg-[var(--surface-bg)]/95 backdrop-blur-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo / Title -->
+          <a href={`${base}`} class="flex items-center gap-2 text-lg font-bold text-cooperforte hover:text-cooperforte-dark transition-colors">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <span class="hidden sm:inline">Simulador Cooperforte</span>
+            <span class="sm:hidden">Cooperforte</span>
+          </a>
+
+          <!-- Desktop nav -->
+          <nav class="hidden md:flex items-center gap-1" aria-label="Navegacao principal">
+            <a href={`${base}`}
+               class="px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+              Inicio
+            </a>
+            <a href={`${base}investimentos/`}
+               class="px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+              Investimentos
+            </a>
+            <a href={`${base}emprestimos/`}
+               class="px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+              Emprestimos
+            </a>
+          </nav>
+
+          <!-- Right side: dark toggle + hamburger -->
+          <div class="flex items-center gap-2">
+            <!-- Dark mode toggle -->
+            <button
+              id="theme-toggle"
+              type="button"
+              class="p-2 rounded-lg text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors"
+              aria-label="Alternar modo escuro"
+            >
+              <!-- Sun icon (shown in dark mode) -->
+              <svg class="w-5 h-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <!-- Moon icon (shown in light mode) -->
+              <svg class="w-5 h-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </button>
+
+            <!-- Mobile hamburger -->
+            <button
+              id="mobile-menu-btn"
+              type="button"
+              class="md:hidden p-2 rounded-lg text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors"
+              aria-label="Abrir menu"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
+              <svg class="w-6 h-6" id="hamburger-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+              <svg class="w-6 h-6 hidden" id="close-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu (hidden by default) -->
+      <nav id="mobile-menu" class="hidden md:hidden border-t border-[var(--border-color)]" aria-label="Menu mobile">
+        <div class="px-4 py-3 space-y-1">
+          <a href={`${base}`}
+             class="block px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+            Inicio
+          </a>
+          <a href={`${base}investimentos/`}
+             class="block px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+            Investimentos
+          </a>
+          <a href={`${base}emprestimos/`}
+             class="block px-3 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-cooperforte hover:bg-cooperforte/10 transition-colors">
+            Emprestimos
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main content -->
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-[var(--border-color)] bg-[var(--surface-card)]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-[var(--text-secondary)]">
+          <!-- Disclaimer -->
+          <div>
+            <p class="font-semibold text-[var(--text-primary)] mb-1">Aviso</p>
+            <p>Simulador educacional — nao constitui recomendacao financeira. Valores sao estimativas e podem divergir dos resultados reais.</p>
+          </div>
+          <!-- Data sources -->
+          <div>
+            <p class="font-semibold text-[var(--text-primary)] mb-1">Fontes de dados</p>
+            <ul class="space-y-1">
+              <li><a href="https://www.bcb.gov.br" target="_blank" rel="noopener noreferrer" class="hover:text-cooperforte transition-colors">Banco Central do Brasil</a></li>
+              <li><a href="https://cf.coop.br" target="_blank" rel="noopener noreferrer" class="hover:text-cooperforte transition-colors">Cooperforte (cf.coop.br)</a></li>
+            </ul>
+          </div>
+          <!-- Links -->
+          <div>
+            <p class="font-semibold text-[var(--text-primary)] mb-1">Projeto</p>
+            <ul class="space-y-1">
+              <li>
+                <a href="https://github.com/josesiqueira/simulador-cooperforte" target="_blank" rel="noopener noreferrer" class="hover:text-cooperforte transition-colors inline-flex items-center gap-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                  GitHub
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 border-t border-[var(--border-color)] text-xs text-[var(--text-secondary)] text-center">
+          &copy; {new Date().getFullYear()} Simulador Cooperforte. Dados sujeitos a alteracao sem aviso previo.
+        </div>
+      </div>
+    </footer>
+
+    <!-- Dark mode toggle script -->
+    <script>
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const html = document.documentElement;
+          const isDark = html.classList.toggle('dark');
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+      }
+
+      // Mobile menu toggle
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const hamburgerIcon = document.getElementById('hamburger-icon');
+      const closeIcon = document.getElementById('close-icon');
+
+      if (menuBtn && mobileMenu && hamburgerIcon && closeIcon) {
+        menuBtn.addEventListener('click', () => {
+          const isOpen = !mobileMenu.classList.contains('hidden');
+          mobileMenu.classList.toggle('hidden');
+          hamburgerIcon.classList.toggle('hidden');
+          closeIcon.classList.toggle('hidden');
+          menuBtn.setAttribute('aria-expanded', String(!isOpen));
+        });
+      }
+    </script>
   </body>
 </html>
 

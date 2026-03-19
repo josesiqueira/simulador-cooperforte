@@ -1,0 +1,68 @@
+---
+// ScenarioSelector — 3 radio cards for Selic scenario selection.
+---
+
+<fieldset class="space-y-3" id="scenario-selector">
+  <legend class="text-sm font-semibold text-[var(--text-primary)] mb-2">Cenario Selic</legend>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <!-- Cortes Acelerados -->
+    <label class="scenario-card group relative flex cursor-pointer rounded-lg border-2 border-[var(--border-color)] bg-[var(--surface-card)] p-4 hover:border-cooperforte/50 has-[:checked]:border-cooperforte has-[:checked]:bg-cooperforte/5 transition-all">
+      <input
+        type="radio"
+        name="cenario"
+        value="acelerado"
+        class="sr-only"
+      />
+      <div class="flex flex-col">
+        <span class="text-sm font-semibold text-[var(--text-primary)]">Cortes Acelerados</span>
+        <span class="text-xs text-[var(--text-secondary)] mt-1">Focus -0,75 p.p.</span>
+      </div>
+      <!-- Check indicator -->
+      <div class="absolute top-3 right-3 hidden group-has-[:checked]:block">
+        <svg class="w-5 h-5 text-cooperforte" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </label>
+
+    <!-- Base Focus -->
+    <label class="scenario-card group relative flex cursor-pointer rounded-lg border-2 border-[var(--border-color)] bg-[var(--surface-card)] p-4 hover:border-cooperforte/50 has-[:checked]:border-cooperforte has-[:checked]:bg-cooperforte/5 transition-all">
+      <input
+        type="radio"
+        name="cenario"
+        value="base"
+        checked
+        class="sr-only"
+      />
+      <div class="flex flex-col">
+        <span class="text-sm font-semibold text-[var(--text-primary)]">Base Focus</span>
+        <span class="text-xs text-[var(--text-secondary)] mt-1">Projecao mediana</span>
+      </div>
+      <div class="absolute top-3 right-3 hidden group-has-[:checked]:block">
+        <svg class="w-5 h-5 text-cooperforte" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </label>
+
+    <!-- Cortes Graduais -->
+    <label class="scenario-card group relative flex cursor-pointer rounded-lg border-2 border-[var(--border-color)] bg-[var(--surface-card)] p-4 hover:border-cooperforte/50 has-[:checked]:border-cooperforte has-[:checked]:bg-cooperforte/5 transition-all">
+      <input
+        type="radio"
+        name="cenario"
+        value="gradual"
+        class="sr-only"
+      />
+      <div class="flex flex-col">
+        <span class="text-sm font-semibold text-[var(--text-primary)]">Cortes Graduais</span>
+        <span class="text-xs text-[var(--text-secondary)] mt-1">Focus +0,75 p.p.</span>
+      </div>
+      <div class="absolute top-3 right-3 hidden group-has-[:checked]:block">
+        <svg class="w-5 h-5 text-cooperforte" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </label>
+  </div>
+</fieldset>

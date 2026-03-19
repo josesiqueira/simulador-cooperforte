@@ -1,0 +1,12 @@
+---
+interface Props {
+  id: string;
+  ariaLabel: string;
+}
+
+const { id, ariaLabel } = Astro.props;
+---
+
+<div class="relative min-h-[300px] rounded-lg border border-[var(--border-color)] bg-[var(--surface-card)] p-4">
+  <canvas id={id} role="img" aria-label={ariaLabel}></canvas>
+</div>

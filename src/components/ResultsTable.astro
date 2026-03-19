@@ -1,0 +1,63 @@
+---
+interface Props {
+  id: string;
+  type: 'investimentos' | 'emprestimos';
+}
+
+const { id, type } = Astro.props;
+---
+
+<div class="overflow-x-auto rounded-lg border border-[var(--border-color)]">
+  <table class="w-full text-sm text-left" role="table" id={id}>
+    <thead class="text-xs uppercase bg-cooperforte/5 text-[var(--text-secondary)] dark:bg-cooperforte/10">
+      {type === 'investimentos' ? (
+        <tr>
+          <th scope="col" class="px-4 py-3 font-semibold">Produto</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Rend. Bruto</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">IR</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Rend. Liquido</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Total</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Rentab. Liquida</th>
+        </tr>
+      ) : (
+        <tr>
+          <th scope="col" class="px-4 py-3 font-semibold">Produto</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Taxa a.m.</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Parcela</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Total</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">Juros</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">IOF</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">CET a.m.</th>
+          <th scope="col" class="px-4 py-3 font-semibold text-right">CET a.a.</th>
+        </tr>
+      )}
+    </thead>
+    <tbody id={`${id}-body`} class="divide-y divide-[var(--border-color)]">
+      <!-- Rows populated by JavaScript -->
+      <tr>
+        <td
+          colspan={type === 'investimentos' ? '6' : '8'}
+          class="px-4 py-8 text-center text-[var(--text-secondary)] italic"
+        >
+          Ajuste os parametros para ver os resultados
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<style>
+  /* Striped rows */
+  tbody tr:nth-child(even) {
+    background-color: var(--surface-card);
+  }
+
+  /* Hover state */
+  tbody tr:hover {
+    background-color: rgba(0, 166, 81, 0.04);
+  }
+
+  .dark tbody tr:hover {
+    background-color: rgba(0, 166, 81, 0.08);
+  }
+</style>

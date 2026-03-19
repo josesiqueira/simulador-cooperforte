@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StaleBanner from '../components/StaleBanner.astro';
+import InvestmentSimulator from '../components/InvestmentSimulator.astro';
+---
+<Layout title="Simulador de Investimentos — Cooperforte">
+  <StaleBanner />
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Simulador de Investimentos</h1>
+    <InvestmentSimulator />
+  </div>
+</Layout>
