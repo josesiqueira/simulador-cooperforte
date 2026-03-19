@@ -275,8 +275,9 @@ import ComparisonChart from './ComparisonChart.astro';
     );
     const selicAtual = getOverrideOrDefault('selic');
     const cenarios = construirCenarios(selicAtual, focusFlat, trimestres);
-    // CDI tracks Selic closely; use scenario trajectory directly
-    return cenarios[state.cenario] || cenarios.base;
+    // CDI = Selic - 0.10 p.p. (standard approximation)
+    const selicTrajectory = cenarios[state.cenario] || cenarios.base;
+    return selicTrajectory.map(s => s - 0.001);
   }
 
   // ── HELPER: read rate from override input or default ─
@@ -340,7 +341,7 @@ import ComparisonChart from './ComparisonChart.astro';
     }
 
     // IR
-    const diasCorridos = state.prazo * 30;
+    const diasCorridos = Math.round(state.prazo * 30.4167);
     const irResult = calcularIR(bruto, diasCorridos, state.rates.ir_regressivo);
 
     // Sobras

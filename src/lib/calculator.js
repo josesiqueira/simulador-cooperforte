@@ -90,37 +90,38 @@ export function equivalenciaIsentoCDB(taxaIsenta, aliquotaIR) {
 /**
  * Construir trajetoria Selic trimestral a partir dos pontos Focus.
  * Interpola linearmente entre pontos-ancora (fim de cada ano).
+ * Ancora do primeiro ano usa os trimestres restantes no ano corrente,
+ * nao um offset fixo de 4 trimestres.
  * @param {number} selicAtual - Selic hoje (ex: 15.00)
  * @param {Object} focus - { "2026": 12.25, "2027": 10.50, ... } (selic_fim por ano)
  * @param {number} trimestres - quantos trimestres simular
  * @returns {number[]} Selic anualizada de cada trimestre (em decimal, ex: 0.1225)
  */
 export function construirTrajetoria(selicAtual, focus, trimestres) {
-  // Build anchor points: quarter index -> selic value
-  // Quarter 0 = now (selicAtual)
-  // Each year-end corresponds to quarter 4*k from the start of the year
   const anchors = [{ q: 0, selic: selicAtual }];
 
   const years = Object.keys(focus).map(Number).sort();
   if (years.length === 0) {
-    // No focus data: constant Selic
     return Array(trimestres).fill(selicAtual / 100);
   }
 
-  const baseYear = years[0];
+  // Calculate quarters remaining in the current year
+  const now = new Date();
+  const currentMonth = now.getMonth(); // 0=Jan, 11=Dec
+  const quartersToEndOfYear = Math.round((12 - currentMonth) / 3);
+
+  // First Focus year anchor = quartersToEndOfYear from now
+  // Subsequent years = +4 quarters each
+  const firstYear = years[0];
   for (const year of years) {
-    // End of year = quarter (year - baseYear + 1) * 4, but relative to q=0
-    // Approximate: 4 quarters per year from the first anchor year
-    const qIndex = (year - baseYear + 1) * 4;
+    const qIndex = quartersToEndOfYear + (year - firstYear) * 4;
     anchors.push({ q: qIndex, selic: focus[year] });
   }
 
-  // Sort anchors by quarter
   anchors.sort((a, b) => a.q - b.q);
 
   const result = [];
   for (let q = 0; q < trimestres; q++) {
-    // Find surrounding anchors
     let lo = anchors[0];
     let hi = anchors[anchors.length - 1];
 
@@ -134,17 +135,15 @@ export function construirTrajetoria(selicAtual, focus, trimestres) {
 
     let selic;
     if (q >= hi.q) {
-      // Beyond last anchor: use last value
       selic = hi.selic;
     } else if (lo.q === hi.q) {
       selic = lo.selic;
     } else {
-      // Linear interpolation
       const t = (q - lo.q) / (hi.q - lo.q);
       selic = lo.selic + t * (hi.selic - lo.selic);
     }
 
-    result.push(selic / 100); // Return as decimal
+    result.push(selic / 100);
   }
 
   return result;
