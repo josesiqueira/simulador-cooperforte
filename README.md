@@ -11,7 +11,7 @@ Simulador financeiro completo para produtos de investimento e credito da Cooperf
 - **Simulador de investimentos** — RDC-i, RDC-q, RDC-sq, LFC Pre, LFC Pos com comparacao lado a lado
 - **Simulador de emprestimos** — Consignado, Portabilidade, MultiCredito, Credito Garantido, CredCooper40, Credito do Trabalhador
 - **Taxas ao vivo do Banco Central** — Selic, CDI e TR atualizados em tempo real via API BCB
-- **3 cenarios Selic (Focus)** — Cortes Acelerados, Base Focus e Cortes Graduais com interpolacao trimestral
+- **3 cenarios Selic (Focus)** — Otimista, Base e Conservador com interpolacao trimestral
 - **Calculo de sobras** — modelo discreto anual baseado no resultado 2024 (116,1% CDI)
 - **Dark mode** — alternancia claro/escuro com persistencia
 - **Mobile-first** — layout responsivo otimizado para celular e desktop
@@ -142,7 +142,13 @@ URL: [https://josesiqueira.github.io/simulador-cooperforte](https://josesiqueira
 > Os valores apresentados sao estimativas baseadas em dados publicos e podem divergir dos valores reais praticados pela Cooperforte.
 > Sobras nao sao garantidas e dependem do resultado anual e aprovacao em assembleia.
 > Consulte a Cooperforte para informacoes oficiais: [cf.coop.br](https://cf.coop.br/)
+>
+> **Este projeto e independente e nao possui vinculo institucional com a Cooperforte.**
 
 ## Licenca
 
 [MIT](LICENSE)
+
+---
+
+Desenvolvido por [Jose Siqueira](https://www.linkedin.com/in/josesiqueira/)
