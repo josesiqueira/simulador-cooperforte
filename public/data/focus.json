@@ -1,13 +1,13 @@
 {
-  "updated_at": "2026-09-07",
+  "updated_at": "2026-09-08",
   "projecoes": {
     "2026": {
       "selic_fim": 13.75,
-      "ipca": 5.01
+      "ipca": 5.0
     },
     "2027": {
       "selic_fim": 12.0,
-      "ipca": 4.28
+      "ipca": 4.29
     },
     "2028": {
       "selic_fim": 10.5,

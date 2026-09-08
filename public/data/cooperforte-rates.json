@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-07-02T14:06:58Z",
+  "updated_at": "2026-09-08T16:14:29Z",
   "source": "cf.coop.br",
   "investimentos": {
     "rdc_i": {
@@ -19,7 +19,7 @@
     },
     "rdc_sq": {
       "taxa_cdi_pct": 100.0,
-      "spread_aa": 0.35,
+      "spread_aa": 0.15,
       "min_aplicacao": 1000000,
       "prazo_min": 24,
       "prazo_max": 60,
